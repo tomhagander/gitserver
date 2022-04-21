@@ -432,3 +432,8 @@ FodyWeavers.xsd
 *.exe
 *.out
 *.app
+
+
+# Eget
+clientserver-main/example/myclient
+clientserver-main/example/myserver
