@@ -437,3 +437,5 @@ FodyWeavers.xsd
 # Eget
 clientserver-main/example/myclient
 clientserver-main/example/myserver
+.DS_Store
+clientserver-main/.DS_Store
