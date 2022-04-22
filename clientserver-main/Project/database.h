@@ -15,7 +15,7 @@ class database{
         vector<string> list_articles(string news_group) const;
         article read(string news_group, string article_name) const;
         bool write(string news_group, article art);
-        bool delete_article(string news_group, string art);
+        bool delete_article(string news_group, string article_name);
     private:
         vector<std::pair<string, vector<article> > > groups;
 };
