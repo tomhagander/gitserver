@@ -21,7 +21,7 @@ LDFLAGS =   -g
 #LDFLAGS +=  -stdlib=libc++
 
 # Targets
-PROGS =  articletest
+PROGS =  articletest database_primary_tester
 
 all: $(PROGS)
 
@@ -30,6 +30,7 @@ test: test_coding
 
 # Targets rely on implicit rules for compiling and linking
 articletest: articletest.o article.o
+database_primary_tester: database_primary_tester.o database_primary.o article.o
 
 # Phony targets
 .PHONY: all test clean distclean
