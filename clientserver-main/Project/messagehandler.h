@@ -14,12 +14,16 @@ class Messagehandler {
 
         ~Messagehandler();
 
-        std::vector<std::string> com_list_ng(const Connection& conn);
+        // returns list of pairs with id number and name
+        std::vector<std::pair<int, std::string> > com_list_ng(const Connection& conn);
 
-        void com_create_ng(const Connection& conn, std::string name);
+        // returns true if successful otherwise false
+        bool com_create_ng(const Connection& conn, std::string name);
 
-        void com_delete_ng(const Connection& conn, int ng_id_nbr);
+        // returns true if siccessful otherwise false
+        bool com_delete_ng(const Connection& conn, int ng_id_nbr);
 
+        
         void com_list_art(const Connection& conn, int ng_id_nbr);
 
         void com_create_art(const Connection& conn, int ng_id_nbr, std::string title, std::string author, std::string text);
@@ -28,11 +32,18 @@ class Messagehandler {
 
         void com_get_art(const Connection& conn, int ng_id_nbr, int art_id_nbr);
 
-
-
-
     private:
+        int readNumber(const Connection& conn);
 
+        void writeNumber(const Connection& conn, int nbr);
+
+        int read_num_p(const Connection& conn);
+
+        std::string read_string_p(const Connection& conn);
+
+        void write_string_p(const Connection& conn, string s);
+
+        void write_num_p(const Connection& conn, int nbr);
 };
 
 
