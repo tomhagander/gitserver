@@ -13,7 +13,7 @@ using std::cerr;
 using std::endl;
 using std::vector;
 using std::pair;
-
+using std::tuple;
 
 Messagehandler::Messagehandler() = default;
 
@@ -81,7 +81,7 @@ vector<pair<int, string> > Messagehandler::com_list_ng(const Connection& conn){
     if (ans != Protocol::ANS_LIST_NG){
         // throw some shit får se hur det borde lösas
     }
-    int nbr_ng = readNumber(conn);
+    int nbr_ng = read_num_p(conn);
     vector<pair<int, string> > groups(nbr_ng);
     for (vector<pair<int, string> >::iterator itr = groups.begin(); itr != groups.end(); itr++){
         int id_num = read_num_p(conn);
@@ -150,5 +150,89 @@ bool Messagehandler::com_delete_ng(const Connection& conn, int id_nbr){
         // throw some shit får se hur det borde lösas
     }
     return success;
+}
+
+vector<pair<int, string> > Messagehandler::com_list_art(const Connection& conn, int ng_id_nbr){
+    // writing command
+    conn.write(Protocol::COM_LIST_ART);
+    write_num_p(conn, ng_id_nbr);
+    conn.write(Protocol::COM_END);
+
+    // reading answer
+    unsigned char ans = conn.read();
+    if (ans != Protocol::ANS_LIST_ART){
+        // throw some shit får se hur det borde lösas
+    }
+    unsigned char ans_acc = conn.read();
+    if (ans_acc == Protocol::ANS_ACK){
+        int nbr_ng = read_num_p(conn);
+        vector<pair<int, string> > articles(nbr_ng);
+        for (vector<pair<int, string> >::iterator itr = articles.begin(); itr != articles.end(); itr++){
+            int id_num = read_num_p(conn);
+            string name = read_string_p(conn);
+            *itr = pair<int, string>(id_num, name);
+        }
+        unsigned char ans_end = conn.read();
+        if (ans != Protocol::ANS_END){
+            // throw some shit får se hur det borde lösas
+        }
+        return articles;
+    } else {
+        unsigned char err_msg = conn.read();
+        // throw some shit or some shit
+        // serverfel eller fel på att det inte fanns något med id numret
+        return nullptr; // tbd
+    }
+    
+}
+
+bool Messagehandler::com_create_art(const Connection& conn, int ng_id_nbr, string title, string author, string text){
+    // writing commmand
+    conn.write(Protocol::COM_CREATE_ART);
+    write_num_p(conn, ng_id_nbr);
+    write_string_p(conn, title);
+    write_string_p(conn, author);
+    write_string_p(conn, text);
+    conn.write(Protocol::COM_END);
+
+    // reading answer
+    unsigned char ans = conn.read();
+    if (ans != Protocol::ANS_CREATE_ART){
+        // throw some shit får se hur det borde lösas
+    }
+
+    // if elsen här är typ som i förra och det behöver bestämmas hur det ska hanteras
+}
+
+bool Messagehandler::com_delete_art(const Connection& conn, int ng_id_nbr, int art_id_nbr){
+    // writing command
+    conn.write(Protocol::COM_DELETE_ART);
+    write_num_p(conn, ng_id_nbr);
+    write_num_p(conn, art_id_nbr);
+    conn.write(Protocol::COM_END);
+
+    // reading answer
+    unsigned char ans = conn.read();
+    if (ans != Protocol::ANS_DELETE_ART){
+        // throw some shit får se hur det borde lösas
+    }
+    // mer throw some shit
+}
+
+
+string Messagehandler::com_get_art(const Connection& conn, int ng_id_nbr, int art_id_nbr){
+    // writing command
+    conn.write(Protocol::COM_GET_ART);
+    write_num_p(conn, ng_id_nbr);
+    write_num_p(conn, art_id_nbr);
+    conn.write(Protocol::COM_END);
+
+    // reading answer
+    unsigned char ans = conn.read();
+    if (ans != Protocol::ANS_GET_ART){
+        // throw some shit får se hur det borde lösas
+    }
+
+    // throw some more
 }
 
