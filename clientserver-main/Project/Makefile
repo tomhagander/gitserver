@@ -25,7 +25,7 @@ LDLIBS = -lclientserver
 
 # Targets
 #PROGS =  articletest database_primary_tester client
-PROGS = client
+PROGS = client server_interface
 
 all: $(PROGS)
 
@@ -36,6 +36,7 @@ test: test_coding
 articletest: articletest.o article.o
 database_primary_tester: database_primary_tester.o database_primary.o article.0
 client: client.o messagehandler.o
+server_interface: server_interface.o
 
 # Phony targets
 .PHONY: all test clean distclean

@@ -52,8 +52,8 @@ int app(const Connection& conn){
             cout << "deletenewsgroup - deletes a newsgroup. Prompt for newsgroup id number will appear" << endl;
             cout << "listarticles    - lists articles in a newsgroup. Promt for newsgroup id number will appear" << endl;
             cout << "createarticle   - creates an article. Prompt for newsgroup id number and info will appear" << endl;
-            cout << "deletearticle   - deletes an article. Prompt for newgroup and article id number will appear" << endl;
-            cout << "getarticle      - gets an article. Prompt for newgroup and article id number will appear" << endl;
+            cout << "deletearticle   - deletes an article. Prompt for newsgroup and article id number will appear" << endl;
+            cout << "getarticle      - gets an article. Prompt for newsgroup and article id number will appear" << endl;
             cout << "exit            - close client" << endl;
 
         } else if (input == "listnewsgroups"){
@@ -62,7 +62,7 @@ int app(const Connection& conn){
                 groups = msg.com_list_ng(conn);
             } catch (std::exception& e) {
                 cout << "Error: " << e.what() << endl;
-            }        
+            }
             for (vector<pair<int, string> >::iterator itr = groups.begin(); itr != groups.end(); itr++){
                 cout << itr->first << " " << itr->second << endl;
             }
@@ -101,17 +101,17 @@ int app(const Connection& conn){
             }
 
         } else if (input == "listarticles"){
-            int prompt;
+            int ng_id_nbr;
             cout << "Type the id number of your desired newsgroup: ";
             try {
-                cin >> prompt;
+                cin >> ng_id_nbr;
             } catch (...) {
                 cout << "Wrong input format!" << endl;
                 break;
             }
             vector<pair<int, string> > articles;
             try {
-                articles = msg.com_list_ng(conn);
+                articles = msg.com_list_art(conn, ng_id_nbr);
             } catch (std::exception& e) {
                 cout << "Error: " << e.what() << endl;
             } for (vector<pair<int, string> >::iterator itr = articles.begin(); itr != articles.end(); itr++){

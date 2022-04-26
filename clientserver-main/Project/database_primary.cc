@@ -9,13 +9,18 @@ using std::vector;
 using std::string;
 using std::pair;
 
+// är det okej med default?? idk?
+database::database() = default;
+
+database::~database() = default;
+
 vector<string> database::list_groups() const{
 	vector<string> names;
 	for(auto p : groups) {
 		names.push_back(p.first);
 	}
 	return names;
-}
+} 
 
 bool database::delete_group(string news_group) {
 	auto idx = std::find_if(groups.begin(), groups.end(), 

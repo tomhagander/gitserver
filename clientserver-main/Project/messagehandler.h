@@ -4,10 +4,9 @@
 
 #include <string>
 #include <vector>
-#include <tuple>
 #include "connection.h"
 
-/* A class for handling low-level protocol messaging */
+/* A class for handling low-level protocol messaging client-side*/
 class Messagehandler {
     public:
 
