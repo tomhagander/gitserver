@@ -4,7 +4,6 @@
 
 #include <string>
 #include <vector>
-#include <tuple>
 #include "connection.h"
 
 /* A class for handling low-level protocol messaging */
