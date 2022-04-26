@@ -10,18 +10,22 @@ DEPFLAGS = -MT $@ -MMD -MP -MF $*.d
 # Define preprocessor, compiler, and linker flags. Uncomment the # lines
 # if you use clang++ and wish to use libc++ instead of GNU's libstdc++.
 # -g is for debugging.
-CPPFLAGS =  -std=c++11 -I.
+CPPFLAGS =  -I../include
 CXXFLAGS =  -O2 -Wall -Wextra -pedantic-errors -Wold-style-cast 
 CXXFLAGS += -std=c++11 
 CXXFLAGS += -g
 CXXFLAGS += $(DEPFLAGS)
-LDFLAGS =   -g 
+LDFLAGS =   -g -L../lib
 #CPPFLAGS += -stdlib=libc++
 #CXXFLAGS += -stdlib=libc++
 #LDFLAGS +=  -stdlib=libc++
 
+#libraries
+LDLIBS = -lclientserver
+
 # Targets
-PROGS =  articletest database_primary_tester
+#PROGS =  articletest database_primary_tester client
+PROGS = client
 
 all: $(PROGS)
 
@@ -30,7 +34,8 @@ test: test_coding
 
 # Targets rely on implicit rules for compiling and linking
 articletest: articletest.o article.o
-database_primary_tester: database_primary_tester.o database_primary.o article.o
+database_primary_tester: database_primary_tester.o database_primary.o article.0
+client: client.o messagehandler.o
 
 # Phony targets
 .PHONY: all test clean distclean

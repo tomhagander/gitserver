@@ -1,6 +1,6 @@
 #include "connection.h"
 #include "connectionclosedexception.h"
-#include "protocol.h"
+#include "messagehandler.h"
 
 #include <iostream>
 #include <stdexcept>
@@ -11,56 +11,11 @@ using std::cin;
 using std::cout;
 using std::endl;
 
-/*
- * Send an integer to the server as four bytes.
- */
-void writeNumber(const Connection& conn, int value)
-{
-        conn.write((value >> 24) & 0xFF);
-        conn.write((value >> 16) & 0xFF);
-        conn.write((value >> 8) & 0xFF);
-        conn.write(value & 0xFF);
-}
 
-/*
- * Send a string to a client.
- */
-void writeString(const std::shared_ptr<Connection>& conn, const string& s)
-{
-        for (char c : s) {
-                conn->write(c);
-        }
-        conn->write('$');
-}
-
-/*
- * Read an integer from a client.
- */
-int readNumber(const std::shared_ptr<Connection>& conn)
-{
-        unsigned char byte1 = conn->read();
-        unsigned char byte2 = conn->read();
-        unsigned char byte3 = conn->read();
-        unsigned char byte4 = conn->read();
-        return (byte1 << 24) | (byte2 << 16) | (byte3 << 8) | byte4;
-}
-
-/*
- * Read a string from the server.
- */
-string readString(const Connection& conn)
-{
-        string s;
-        char   ch;
-        while ((ch = conn.read()) != '$') {
-                s += ch;
-        }
-        return s;
-}
 
 Connection init(int argc, char* argv[]){
     if (argc != 3) {
-        std::cerr << "Usage: myclient host-name port-number" << endl;
+        std::cerr << "Usage: client host-name port-number" << endl;
         exit(1);
     }
 
@@ -82,9 +37,46 @@ Connection init(int argc, char* argv[]){
 }
 
 int app(const Connection& conn){
-    cout << "Welcome to the newsserver! Type help for list of operations" << endl;
-    cout << "Type the number of an operation: ";
-    
+    Messagehandler msg{};
+    cout << "Welcome to the newsserver! Type help for a list of operations" << endl;
+    cout << "Type an operation: ";
+    string input;
+    while(cin >> input){
+        if (input == "help"){
+            cout << "Commands: " << endl;
+            cout << "listnewsgroups - provides a list of existing newsgroups" << endl;
+            cout << "createnewsgroup - creates a new newsgroup. Prompt for name will appear" << endl;
+            cout << "deletenewsgroup - deletes a newsgroup. Prompt for newsgroup id number will appear" << endl;
+            cout << "listarticles - lists articles in a newsgroup. Promt for newsgroup id number will appear" << endl;
+            cout << "createarticle - creates an article. Prompt for newsgroup id number and info will appear" << endl;
+            cout << "deletearticle - deletes an article. Prompt for newgroup and article id number will appear" << endl;
+            cout << "getarticle - gets an article. Prompt for newgroup and article id number will appear" << endl;
+            cout << "exit - close client" << endl;
+
+        } else if (input == "listnewsgroups"){
+            cout << "1" << endl;
+        } else if (input == "createnewsgroup"){
+            cout << "2" << endl;
+        } else if (input == "deletenewsgroup"){
+            cout << "3" << endl;
+        } else if (input == "listarticles"){
+            cout << "4" << endl;
+        } else if (input == "createarticle"){
+            cout << "5" << endl;
+        } else if (input == "deletearticle"){
+            cout << "6" << endl;
+        } else if (input == "getarticle"){
+            cout << "7" << endl;
+        } else if (input == "exit"){
+            cout << "Exiting..." << endl;
+            break;
+        } else {
+            cout << "Input not recognized!" << endl;
+        }
+        cout << endl;
+        cout << "Type an operation: ";
+    }
+    return 0;
 }
 
 int main(int argc, char* argv[]){

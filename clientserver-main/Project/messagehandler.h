@@ -34,7 +34,7 @@ class Messagehandler {
         // returns true if successful otherwise false
         bool com_delete_art(const Connection& conn, int ng_id_nbr, int art_id_nbr);
 
-        // returns tuple with title, author, then text. Return param needs changing
+        // returns title, author, then text. Return param needs changing
         std::string com_get_art(const Connection& conn, int ng_id_nbr, int art_id_nbr);
 
     private:
@@ -46,11 +46,9 @@ class Messagehandler {
 
         std::string read_string_p(const Connection& conn);
 
-        void write_string_p(const Connection& conn, string s);
+        void write_string_p(const Connection& conn, std::string s);
 
         void write_num_p(const Connection& conn, int nbr);
 };
-
-
 
 #endif
