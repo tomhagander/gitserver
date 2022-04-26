@@ -7,6 +7,8 @@
 
 // own exception
 #include "clientmisbehavedexception.h"
+#include "badartnumber.h"
+#include "badngnumber.h"
 
 #include <cstdlib>
 #include <iostream>
@@ -158,10 +160,10 @@ void process_request(std::shared_ptr<Connection>& conn, database db, Servermessa
         try {
             db.delete_article(ng_id_nbr, art_id_nbr);
             success = true;
-        } catch (bad_ng_number){ // to be specified
+        } catch (BadNGException& e){
             success = false;
             err_type = 1;
-        } catch (bad_art_number){ // to be specified
+        } catch (BadARTException& e){
             success = false;
             err_type = 0;
         }
@@ -201,10 +203,10 @@ void process_request(std::shared_ptr<Connection>& conn, database db, Servermessa
         try {
             db.read(ng_id_nbr, art_id_nbr, title, author, text);
             success = true;
-        } catch (bad_ng_number){ // to be specified
+        } catch (BadNGException& e){
             success = false;
             err_type = 1;
-        } catch (bad_art_number){ // to be specified
+        } catch (BadARTException& e){
             success = false;
             err_type = 0;
         }

@@ -11,16 +11,28 @@ class database{
     public:
         database();
         ~database();
-        vector<string> list_groups() const;
+
+        // borde vara vector<pair<int, string>>
+        vector<std::pair<int, string> > list_groups() const;
+
+        // should return false if already exists
         bool create_group(string news_group);
 
         // borde nog inte ta string, ska deleta på id nbr
         bool delete_group(string news_group);
+
+        // borde vara vector<pair<int, string>>. Borde ta int och inte string. Borde throwa does not exist, finns h-filer för dessa exceptions i include 
         vector<string> list_articles(string news_group) const;
+
+        // borde ta id nbrs istället för string. Borde throwa does not exsist
+        // VAL att göra: Ska server_interface känna till article eller ska den passa referenser till read?? Implementerar referenser sålänge
         article read(string news_group, string article_name) const;
+
+        // borde ta id nbr. Vad vi väljer ovan påverkar vad som skickas in till denna.
+        // borde alltså ta int string string string
         bool write(string news_group, article art);
 
-        // borde inte ta string, ska vara id nbr
+        // borde inte ta string, ska vara id nbr. Borde throwa två olika sorters error beroende på vilken som inte finns
         bool delete_article(string news_group, string article_name);
     private:
         vector<std::pair<string, vector<article> > > groups;
