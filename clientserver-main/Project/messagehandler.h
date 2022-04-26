@@ -4,6 +4,7 @@
 
 #include <string>
 #include <vector>
+#include <tuple>
 #include "connection.h"
 
 /* A class for handling low-level protocol messaging */
@@ -34,8 +35,8 @@ class Messagehandler {
         // returns true if successful otherwise false
         bool com_delete_art(const Connection& conn, int ng_id_nbr, int art_id_nbr);
 
-        // returns title, author, then text. Return param needs changing
-        std::string com_get_art(const Connection& conn, int ng_id_nbr, int art_id_nbr);
+        // returns nothing but sends references to the strings. hope this works
+        void com_get_art(const Connection& conn, int ng_id_nbr, int art_id_nbr, std::string& title, std::string& author, std::string& text);
 
     private:
         int readNumber(const Connection& conn);

@@ -5,11 +5,14 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 using std::string;
 using std::cin;
 using std::cout;
 using std::endl;
+using std::vector;
+using std::pair;
 
 
 
@@ -44,30 +47,152 @@ int app(const Connection& conn){
     while(cin >> input){
         if (input == "help"){
             cout << "Commands: " << endl;
-            cout << "listnewsgroups - provides a list of existing newsgroups" << endl;
+            cout << "listnewsgroups  - provides a list of existing newsgroups" << endl;
             cout << "createnewsgroup - creates a new newsgroup. Prompt for name will appear" << endl;
             cout << "deletenewsgroup - deletes a newsgroup. Prompt for newsgroup id number will appear" << endl;
-            cout << "listarticles - lists articles in a newsgroup. Promt for newsgroup id number will appear" << endl;
-            cout << "createarticle - creates an article. Prompt for newsgroup id number and info will appear" << endl;
-            cout << "deletearticle - deletes an article. Prompt for newgroup and article id number will appear" << endl;
-            cout << "getarticle - gets an article. Prompt for newgroup and article id number will appear" << endl;
-            cout << "exit - close client" << endl;
+            cout << "listarticles    - lists articles in a newsgroup. Promt for newsgroup id number will appear" << endl;
+            cout << "createarticle   - creates an article. Prompt for newsgroup id number and info will appear" << endl;
+            cout << "deletearticle   - deletes an article. Prompt for newgroup and article id number will appear" << endl;
+            cout << "getarticle      - gets an article. Prompt for newgroup and article id number will appear" << endl;
+            cout << "exit            - close client" << endl;
 
         } else if (input == "listnewsgroups"){
-            cout << "1" << endl;
+            vector<pair<int, string> > groups;
+            try {
+                groups = msg.com_list_ng(conn);
+            } catch (std::exception& e) {
+                cout << "Error: " << e.what() << endl;
+            }        
+            for (vector<pair<int, string> >::iterator itr = groups.begin(); itr != groups.end(); itr++){
+                cout << itr->first << " " << itr->second << endl;
+            }
+
         } else if (input == "createnewsgroup"){
-            cout << "2" << endl;
+            bool success = false;
+            string prompt;
+            cout << "Type the name of the new newsgroup: ";
+            cin >> prompt;
+            try {
+                success = msg.com_create_ng(conn, prompt);
+            } catch (const std::exception& e){
+                cout << "Error: " << e.what() << endl;
+            }
+            if (success){
+                cout << "Success! Created " << prompt << endl;
+            }
+
         } else if (input == "deletenewsgroup"){
-            cout << "3" << endl;
+            bool success = false;
+            int prompt;
+            cout << "Type the id number of the newsgroup you want to delete: ";
+            try {
+                cin >> prompt;
+            } catch (...) {
+                cout << "Wrong input format!" << endl;
+                break;
+            }
+            try {
+                success = msg.com_delete_ng(conn, prompt);
+            } catch (const std::exception& e){
+                cout << "Error: " << e.what() << endl;
+            }
+            if (success){
+                cout << "Success! Deleted group number " << prompt << endl;
+            }
+
         } else if (input == "listarticles"){
-            cout << "4" << endl;
+            int prompt;
+            cout << "Type the id number of your desired newsgroup: ";
+            try {
+                cin >> prompt;
+            } catch (...) {
+                cout << "Wrong input format!" << endl;
+                break;
+            }
+            vector<pair<int, string> > articles;
+            try {
+                articles = msg.com_list_ng(conn);
+            } catch (std::exception& e) {
+                cout << "Error: " << e.what() << endl;
+            } for (vector<pair<int, string> >::iterator itr = articles.begin(); itr != articles.end(); itr++){
+                cout << itr->first << " " << itr->second << endl;
+            }
+
         } else if (input == "createarticle"){
-            cout << "5" << endl;
+            bool success = false;
+            int ng_id_nbr;
+            string title;
+            string author;
+            string text;
+            try {
+                cout << "Type the id number of your desired newsgroup: ";
+                cin >> ng_id_nbr;
+            } catch (...) {
+                cout << "Wrong input format! " << endl;
+            }
+            cout << "Article title: ";
+            cin >> title;
+            cout << "Article author: ";
+            cin >> author;
+            cout << "Article text: ";
+            cin >> text;
+
+            try {
+                success = msg.com_create_art(conn, ng_id_nbr, title, author, text);
+            } catch (std::exception& e) {
+                cout << "Error: " << e.what() << endl;
+            }
+            if (success) {
+                cout << "Success! Created article " << title << endl;
+            }
+
         } else if (input == "deletearticle"){
-            cout << "6" << endl;
+            bool success = false;
+            int ng_id_nbr;
+            int art_id_nbr;
+            try {
+                cout << "Type the id number of the article's newsgroup: ";
+                cin >> ng_id_nbr;
+                cout << "Type the id number of the article to be deleted: ";
+                cin >> art_id_nbr;
+            } catch (...) {
+                cout << "Wrong input format! " << endl;
+            }
+
+            try {
+                success = msg.com_delete_art(conn, ng_id_nbr, art_id_nbr);
+            } catch (std::exception& e) {
+                cout << "Error: " << e.what() << endl;
+            }
+            if (success) {
+                cout << "Success! Deleted article." << endl;
+            }
+
         } else if (input == "getarticle"){
-            cout << "7" << endl;
+            string title;
+            string author;
+            string text;
+            int ng_id_nbr;
+            int art_id_nbr;
+            try {
+                cout << "Type the id number of the article's newsgroup: ";
+                cin >> ng_id_nbr;
+                cout << "Type the id number of the article: ";
+                cin >> art_id_nbr;
+            } catch (...) {
+                cout << "Wrong input format! " << endl;
+            }
+
+            try {
+                msg.com_get_art(conn, ng_id_nbr, art_id_nbr, title, author, text);
+            } catch (std::exception& e) {
+                cout << "Error: " << e.what() << endl;
+            }
+            cout << title << endl;
+            cout << author << endl;
+            cout << text << endl;
         } else if (input == "exit"){
+
             cout << "Exiting..." << endl;
             break;
         } else {

@@ -13,6 +13,7 @@ using std::cerr;
 using std::endl;
 using std::vector;
 using std::pair;
+using std::tuple;
 
 
 // är det okej med default?? idk?
@@ -80,7 +81,7 @@ vector<pair<int, string> > Messagehandler::com_list_ng(const Connection& conn){
     // reading answer
     unsigned char ans = conn.read();
     if (ans != static_cast<int>(Protocol::ANS_LIST_NG)){
-        throw std::runtime_error("Wrong answer type or no answer: " + ans);
+        throw std::runtime_error("Wrong answer type or no answer: ");
     }
     
     int nbr_ng = read_num_p(conn);
@@ -97,7 +98,7 @@ vector<pair<int, string> > Messagehandler::com_list_ng(const Connection& conn){
         throw std::runtime_error("Something wrong from server");
     }
     unsigned char ans_end = conn.read();
-    if (ans != static_cast<int>(Protocol::ANS_END)){
+    if (ans_end != static_cast<int>(Protocol::ANS_END)){
         throw std::runtime_error("Answer not terminated");
     }
     return groups;
@@ -113,7 +114,7 @@ bool Messagehandler::com_create_ng(const Connection& conn, string name){
     bool success;
     unsigned char ans = conn.read();
     if (ans != static_cast<int>(Protocol::ANS_CREATE_NG)){
-        throw std::runtime_error("Wrong answer type or no answer: " + ans);
+        throw std::runtime_error("Wrong answer type or no answer: ");
     }
     unsigned char acc_status = conn.read();
     if (acc_status == static_cast<int>(Protocol::ANS_ACK)){
@@ -122,10 +123,10 @@ bool Messagehandler::com_create_ng(const Connection& conn, string name){
         success = false;
         throw std::runtime_error("Ans not accepted");
     } else {
-        throw std::runtime_error("Wierd answer: " + acc_status);
+        throw std::runtime_error("Wierd answer: ");
     }
     unsigned char ans_end = conn.read();
-    if (ans != static_cast<int>(Protocol::ANS_END)){
+    if (ans_end != static_cast<int>(Protocol::ANS_END)){
         throw std::runtime_error("Answer not terminated");
     }
     return success;
@@ -142,7 +143,7 @@ bool Messagehandler::com_delete_ng(const Connection& conn, int id_nbr){
     bool success;
     unsigned char ans = conn.read();
     if (ans != static_cast<int>(Protocol::ANS_DELETE_NG)){
-        throw std::runtime_error("Wrong answer type or no answer: " + ans);
+        throw std::runtime_error("Wrong answer type or no answer: ");
     }
     unsigned char acc_status = conn.read();
     if (acc_status == static_cast<int>(Protocol::ANS_ACK)){
@@ -151,10 +152,10 @@ bool Messagehandler::com_delete_ng(const Connection& conn, int id_nbr){
         success = false;
         throw std::runtime_error("Ans not accepted");
     } else {
-        throw std::runtime_error("Wierd answer: " + acc_status);
+        throw std::runtime_error("Wierd answer: ");
     }
     unsigned char ans_end = conn.read();
-    if (ans != static_cast<int>(Protocol::ANS_END)){
+    if (ans_end != static_cast<int>(Protocol::ANS_END)){
         throw std::runtime_error("Answer not terminated");
     }
     return success;
@@ -169,7 +170,7 @@ vector<pair<int, string> > Messagehandler::com_list_art(const Connection& conn, 
     // reading answer
     unsigned char ans = conn.read();
     if (ans != static_cast<int>(Protocol::ANS_LIST_ART)){
-        throw std::runtime_error("Wrong answer type or no answer: " + ans);
+        throw std::runtime_error("Wrong answer type or no answer: ");
     }
     unsigned char ans_acc = conn.read();
     if (ans_acc == static_cast<int>(Protocol::ANS_ACK)){
@@ -181,15 +182,15 @@ vector<pair<int, string> > Messagehandler::com_list_art(const Connection& conn, 
             *itr = pair<int, string>(id_num, name);
         }
         unsigned char ans_end = conn.read();
-        if (ans != static_cast<int>(Protocol::ANS_END)){
+        if (ans_end != static_cast<int>(Protocol::ANS_END)){
             throw std::runtime_error("Answer not terminated");
         }
         return articles;
     } else if (ans_acc == static_cast<int>(Protocol::ANS_NAK)) {
-        unsigned char err_msg = conn.read();
-        throw std::runtime_error("Not accepted: " + err_msg);
+        // unsigned char err_msg = conn.read();
+        throw std::runtime_error("Not accepted: ");
     } else {
-        throw std::runtime_error("Wierd answer: " + ans_acc);
+        throw std::runtime_error("Wierd answer: ");
     }
     
 }
@@ -207,7 +208,7 @@ bool Messagehandler::com_create_art(const Connection& conn, int ng_id_nbr, strin
     bool success;
     unsigned char ans = conn.read();
     if (ans != static_cast<int>(Protocol::ANS_CREATE_ART)){
-        throw std::runtime_error("Wrong answer type or no answer: " + ans);
+        throw std::runtime_error("Wrong answer type or no answer: ");
     }
     unsigned char acc_status = conn.read();
     if (acc_status == static_cast<int>(Protocol::ANS_ACK)){
@@ -217,10 +218,10 @@ bool Messagehandler::com_create_art(const Connection& conn, int ng_id_nbr, strin
         throw std::runtime_error("Ans not accepted");
         // något mer här?? NAK TYPE?
     } else {
-        throw std::runtime_error("Wierd answer: " + acc_status);
+        throw std::runtime_error("Wierd answer: ");
     }
     unsigned char ans_end = conn.read();
-    if (ans != static_cast<int>(Protocol::ANS_END)){
+    if (ans_end != static_cast<int>(Protocol::ANS_END)){
         throw std::runtime_error("Answer not terminated");
     }
     return success;
@@ -237,7 +238,7 @@ bool Messagehandler::com_delete_art(const Connection& conn, int ng_id_nbr, int a
     bool success;
     unsigned char ans = conn.read();
     if (ans != static_cast<int>(Protocol::ANS_DELETE_ART)){
-        throw std::runtime_error("Wrong answer type or no answer: " + ans);
+        throw std::runtime_error("Wrong answer type or no answer: ");
     }
     unsigned char acc_status = conn.read();
     if (acc_status == static_cast<int>(Protocol::ANS_ACK)){
@@ -250,20 +251,20 @@ bool Messagehandler::com_delete_art(const Connection& conn, int ng_id_nbr, int a
         } else if (err_type == static_cast<int>(Protocol::ERR_ART_DOES_NOT_EXIST)){
             throw std::runtime_error("Ans not accepted: article does not exist");
         } else {
-            throw std::runtime_error("Wierd answer: " + err_type);
+            throw std::runtime_error("Wierd answer: ");
         }
     } else {
-        throw std::runtime_error("Wierd answer: " + acc_status);
+        throw std::runtime_error("Wierd answer: ");
     }
     unsigned char ans_end = conn.read();
-    if (ans != static_cast<int>(Protocol::ANS_END)){
+    if (ans_end != static_cast<int>(Protocol::ANS_END)){
         throw std::runtime_error("Answer not terminated");
     }
     return success;
 }
 
 
-string Messagehandler::com_get_art(const Connection& conn, int ng_id_nbr, int art_id_nbr){
+void Messagehandler::com_get_art(const Connection& conn, int ng_id_nbr, int art_id_nbr, string& title, string& author, string& text){
     // writing command
     conn.write(static_cast<int>(Protocol::COM_GET_ART));
     write_num_p(conn, ng_id_nbr);
@@ -271,12 +272,9 @@ string Messagehandler::com_get_art(const Connection& conn, int ng_id_nbr, int ar
     conn.write(static_cast<int>(Protocol::COM_END));
 
     // reading answer
-    string title;
-    string author;
-    string text;
     unsigned char ans = conn.read();
     if (ans != static_cast<int>(Protocol::ANS_GET_ART)){
-        throw std::runtime_error("Wrong answer type or no answer: " + ans);
+        throw std::runtime_error("Wrong answer type or no answer: ");
     }
     unsigned char ans_status = conn.read();
     if (ans_status == static_cast<int>(Protocol::ANS_ACK)){
@@ -290,17 +288,15 @@ string Messagehandler::com_get_art(const Connection& conn, int ng_id_nbr, int ar
         } else if (err_type == static_cast<int>(Protocol::ERR_ART_DOES_NOT_EXIST)){
             throw std::runtime_error("Ans not accepted: article does not exist");
         } else {
-            throw std::runtime_error("Wierd answer: " + err_type);
+            throw std::runtime_error("Wierd answer: ");
         }
     } else {
-        throw std::runtime_error("Wierd answer: " + ans_status);
+        throw std::runtime_error("Wierd answer: ");
     }
     unsigned char ans_end = conn.read();
     if (ans_end != static_cast<int>(Protocol::ANS_END)){
         throw std::runtime_error("Answer not terminated");
     }
-
-    return "0"; //something else
 
 }
 
