@@ -39,7 +39,7 @@ class database{
         bool delete_article(int ng_id_nbr, int art_id_nbr);
         
     private:
-        //vector<Newsgroup> groups;
+        // vector<Newsgroup> groups;
         int update_ctr();
         int ctr;
 };

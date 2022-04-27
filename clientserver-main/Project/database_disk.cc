@@ -28,7 +28,7 @@ database::database() {
 		getline(counter, nbr);
 		ctr = std::stoi(nbr);
 	} catch (...) {
-		ctr = 0;
+		ctr = -1;
 	}
 	counter.close();
 }
