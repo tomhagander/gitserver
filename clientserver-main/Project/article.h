@@ -10,7 +10,7 @@ class Article{
         std::string getAuthor() const;
         std::string getText() const;
         std::string getTitle() const;
-        int get_ID() const;
+        int getIdNbr() const;
     private:
         int id_nbr;
         std::string title;

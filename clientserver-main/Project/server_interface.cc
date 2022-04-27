@@ -36,7 +36,7 @@ void process_request(std::shared_ptr<Connection>& conn, database db, Servermessa
 
         // answering (and database)
         conn->write(static_cast<int>(Protocol::ANS_LIST_NG));
-        smsg.send_list(db.list_groups());
+        smsg.send_list(conn, db.list_groups());
         conn->write(static_cast<int>(Protocol::ANS_END));
 
     } 
@@ -199,16 +199,16 @@ void process_request(std::shared_ptr<Connection>& conn, database db, Servermessa
         string text;
 
         bool success;
-        bool err_type;
+        Protocol err_type;
         try {
             db.read(ng_id_nbr, art_id_nbr, title, author, text);
             success = true;
         } catch (BadNGException& e){
             success = false;
-            err_type = 1;
+            err_type = Protocol::ERR_NG_DOES_NOT_EXIST;
         } catch (BadARTException& e){
             success = false;
-            err_type = 0;
+            err_type = Protocol::ERR_ART_DOES_NOT_EXIST;
         }
 
         // answering
@@ -221,11 +221,7 @@ void process_request(std::shared_ptr<Connection>& conn, database db, Servermessa
 
         } else {
             conn->write(static_cast<int>(Protocol::ANS_NAK));
-            if (err_type == 1){
-                conn->write(static_cast<int>(Protocol::ERR_NG_DOES_NOT_EXIST));
-            } else if (err_type == 0){
-                conn->write(static_cast<int>(Protocol::ERR_ART_DOES_NOT_EXIST));
-            }
+            conn->write(static_cast<int>(err_type));
         }
         conn->write(static_cast<int>(Protocol::ANS_END));
     } else {

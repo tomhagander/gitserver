@@ -3,13 +3,15 @@
 
 #include "article.h"
 
+#include <vector>
+
 using std::string;
 using std::vector;
 
 class Newsgroup {
 
 	public:
-		Newsgroup(string title, int ng_id_nbr);
+		Newsgroup(int ng_id_nbr, string title);
 		int get_id_nbr() const;
 		string get_title() const;
 		vector<Article> get_articles() const;

@@ -1,33 +1,32 @@
 #include "newsgroup.h"
 #include "article.h"
 
+#include <vector>
+
 using std::string;
 using std::vector;
 
-Newsgroup::Newsgroup(int ng_id_nbr, string title) : this->title{title}, this->id_nbr{ng_id_nbr} {}
+Newsgroup::Newsgroup(int ng_id_nbr, string title) : title{title}, id_nbr{ng_id_nbr}, articles{} {}
 
-Newsgroup::get_title() const {
+string Newsgroup::get_title() const {
 	return title;
 }
 
-Newsgroup::get_id_nbr() const {
+int Newsgroup::get_id_nbr() const {
 	return id_nbr;
 }
 
-Newsgroup::get_articles() const {
-	return articles()
+vector<Article> Newsgroup::get_articles() const {
+	return articles;
 }
 
-Newsgroup::add_article(Article art) {
-	articles.pushback(art);
+void Newsgroup::add_article(Article art) {
+	articles.push_back(art);
 }
 
-Newsgroup::remove_article(int id_nbr) {
-	for (Article a : articles) {
-		if(a.get_id_nbr() == id_nbr) {
-			articles.erase(&a);
-			return;
-		}
-	}
+void Newsgroup::remove_article(int id_nbr) {
+    auto art_it = std::find_if( articles.begin(), articles.end(), 
+	[id_nbr](const Article art){ return art.getIdNbr() == id_nbr;} );
+	articles.erase(art_it);
 }
 

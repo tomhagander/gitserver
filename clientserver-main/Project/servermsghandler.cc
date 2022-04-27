@@ -74,7 +74,7 @@ string Servermessagehandler::read_string_p(const std::shared_ptr<Connection>& co
     string s;
     char ch;
     for (int i = 0; i < num_chars; i++){
-        ch = conn.read();
+        ch = conn->read();
         s += ch;
     }
     return s;

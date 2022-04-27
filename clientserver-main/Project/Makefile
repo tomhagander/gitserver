@@ -34,9 +34,9 @@ test: test_coding
 
 # Targets rely on implicit rules for compiling and linking
 articletest: articletest.o article.o
-database_primary_tester: database_primary_tester.o database_primary.o article.0
+database_primary_tester: database_primary_tester.o database_primary.o article.o
 client: client.o messagehandler.o
-server_interface: server_interface.o
+server_interface: server_interface.o database_primary.o article.o newsgroup.o servermsghandler.o
 
 # Phony targets
 .PHONY: all test clean distclean

@@ -21,7 +21,7 @@ database::~database() = default;
 vector<pair<int, string> > database::list_groups() const{
 	vector<pair<int, string> > names;
 	for(auto p : groups) {
-		names.push_back(p.first);
+		names.push_back(std::make_pair(p.get_id_nbr(), p.get_title()));
 	}
 	return names;
 } 
@@ -39,9 +39,9 @@ bool database::delete_group(int ng_id_nbr) {
 bool database::create_group(string ng_name){
     // ska kolla om det redan finns en sådan grupp
     auto it = std::find_if( groups.begin(), groups.end(),
-        [ng_name](const Newsgroup ng){ return ng.get_name() == ng_name;} );
+        [ng_name](const Newsgroup ng){ return ng.get_title() == ng_name;} );
     if(it == groups.end()){
-        Newsgroup group(ng_name, ctr++); // init newsgroup
+        Newsgroup group(ctr++, ng_name); // init newsgroup
         groups.push_back(group);
         return true;
     }else{
@@ -58,7 +58,7 @@ vector<pair<int, string> > database::list_articles(int ng_id_nbr) const{
         throw BadNGException();
     }else{
         for(auto e : (*it).get_articles()){
-            articles.push_back(make_pair(e.get_ID(), e, getTitle()));
+            articles.push_back(std::make_pair(e.getIdNbr(), e.getTitle()));
         }
     }
     return articles;
@@ -73,9 +73,9 @@ bool database::read(int ng_id_nbr, int art_id_nbr, string& title, string& author
     }else{
         vector<Article> articles = ng_it->get_articles();
         auto art_it = std::find_if( articles.begin(), articles.end(),
-        [art_id_nbr](const Article art){ return art.get_id_nbr() == art_id_nbr;} );
+        [art_id_nbr](const Article art){ return art.getIdNbr() == art_id_nbr;} );
         
-        if(art_it == groups.end()){
+        if(art_it == articles.end()){
             throw BadARTException();
         } else {
             title = art_it->getTitle();
@@ -99,7 +99,7 @@ bool database::write(int ng_id_nbr, string title, string author, string text){
         return true;
 }
 
-bool database::delete_article(int ng_id_nbr, string art_id_nbr){
+bool database::delete_article(int ng_id_nbr, int art_id_nbr){
     auto ng_it = std::find_if( groups.begin(), groups.end(),
         [ng_id_nbr](const Newsgroup ng){ return ng.get_id_nbr() == ng_id_nbr;} );
 
@@ -108,6 +108,12 @@ bool database::delete_article(int ng_id_nbr, string art_id_nbr){
     }else{
         vector<Article> articles = ng_it->get_articles();
         auto art_it = std::find_if( articles.begin(), articles.end(),
-        [art_id_nbr](const Article art){ return art.get_id_nbr() == art_id_nbr;} );
+        [art_id_nbr](const Article art){ return art.getIdNbr() == art_id_nbr;} );
+
+        if (art_it == articles.end()){
+            throw BadARTException();
+        }
+        articles.erase(art_it);
     }
+    return true;
 }

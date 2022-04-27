@@ -4,8 +4,7 @@
 #include <iostream>
 using std::string;
 
-Article::Article(std::string& t, std::string& a, std::string& txt, int id): title{t}, author{a}, text{txt} id_nbr{id} {}
-
+Article::Article(std::string& t, std::string& a, std::string& txt, int id): title{t}, author{a}, text{txt}, id_nbr{id} {}
 // article::article(char* t, char* a, char* txt){
 //     string t_string(t);
 //     string a_string(a);
