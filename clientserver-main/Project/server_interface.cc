@@ -23,11 +23,12 @@ using std::endl;
 using std::pair;
 using std::vector;
 
-void process_request(std::shared_ptr<Connection>& conn, database db, Servermessagehandler smsg) {
+void process_request(std::shared_ptr<Connection>& conn, database& db, Servermessagehandler& smsg) {
     unsigned char com = conn->read();
 
     // case listnewsgroups
     if (com == static_cast<int>(Protocol::COM_LIST_NG)){
+
         // reading
         unsigned char com_end = conn->read();
         if (com_end != static_cast<int>(Protocol::COM_END)){
@@ -110,6 +111,7 @@ void process_request(std::shared_ptr<Connection>& conn, database db, Servermessa
         conn->write(static_cast<int>(Protocol::ANS_LIST_ART));
         if (success) {
             conn->write(static_cast<int>(Protocol::ANS_ACK));
+            smsg.send_list(conn, articles);
         } else {
             conn->write(static_cast<int>(Protocol::ANS_NAK));
             conn->write(static_cast<int>(Protocol::ERR_NG_DOES_NOT_EXIST));
@@ -229,7 +231,7 @@ void process_request(std::shared_ptr<Connection>& conn, database db, Servermessa
     }
 }
 
-void serve_one(Server& server, database db, Servermessagehandler smsg) {
+void serve_one(Server& server, database& db, Servermessagehandler& smsg) {
     auto conn = server.waitForActivity();
     if (conn != nullptr) {
         try {

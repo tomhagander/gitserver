@@ -15,7 +15,6 @@ using std::vector;
 using std::pair;
 
 
-// är det okej med default?? idk?
 Messagehandler::Messagehandler() = default;
 
 Messagehandler::~Messagehandler() = default;
@@ -160,6 +159,8 @@ bool Messagehandler::com_delete_ng(const Connection& conn, int id_nbr){
     return success;
 }
 
+
+// har fuckat med denna
 vector<pair<int, string> > Messagehandler::com_list_art(const Connection& conn, int ng_id_nbr){
     // writing command
     conn.write(static_cast<int>(Protocol::COM_LIST_ART));
@@ -168,6 +169,7 @@ vector<pair<int, string> > Messagehandler::com_list_art(const Connection& conn, 
 
     // reading answer
     unsigned char ans = conn.read();
+    cout << "read first byte answer" << endl;
     if (ans != static_cast<int>(Protocol::ANS_LIST_ART)){
         throw std::runtime_error("Wrong answer type or no answer: ");
     }

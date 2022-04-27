@@ -37,6 +37,7 @@ class database{
 
         // borde inte ta string, ska vara id nbr. Borde throwa två olika sorters error beroende på vilken som inte finns
         bool delete_article(int ng_id_nbr, int art_id_nbr);
+        
     private:
         vector<Newsgroup> groups;
         int ctr;

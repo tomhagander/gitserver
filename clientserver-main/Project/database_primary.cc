@@ -9,10 +9,13 @@
 #include <vector>
 #include <string>
 #include <stdexcept>
+#include <iostream>
 
 using std::vector;
 using std::string;
 using std::pair;
+using std::cout;
+using std::endl;
 
 database::database() = default;
 
