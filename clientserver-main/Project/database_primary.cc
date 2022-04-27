@@ -1,5 +1,10 @@
 #include "database.h"
 #include "article.h"
+#include "newsgroup.h"
+
+// own exceptions
+#include "badngnumber.h"
+#include "badartnumber.h"
 
 #include <vector>
 #include <string>
@@ -9,22 +14,21 @@ using std::vector;
 using std::string;
 using std::pair;
 
-// är det okej med default?? idk?
 database::database() = default;
 
 database::~database() = default;
 
-vector<string> database::list_groups() const{
-	vector<string> names;
+vector<pair<int, string> > database::list_groups() const{
+	vector<pair<int, string> > names;
 	for(auto p : groups) {
 		names.push_back(p.first);
 	}
 	return names;
 } 
 
-bool database::delete_group(string news_group) {
+bool database::delete_group(int ng_id_nbr) {
 	auto idx = std::find_if(groups.begin(), groups.end(), 
-			[&] (const pair<string, vector<article> > p) {return p.first == news_group;});
+			[ng_id_nbr] (const Newsgroup ng) {return ng.get_id_nbr() == ng_id_nbr;});
 	if(idx == groups.end()) {
 		return false;
 	}
@@ -32,13 +36,12 @@ bool database::delete_group(string news_group) {
 	return true;
 }
 
-bool database::create_group(string news_group){
+bool database::create_group(string ng_name){
     // ska kolla om det redan finns en sådan grupp
     auto it = std::find_if( groups.begin(), groups.end(),
-        [&](const pair<string, vector<article> >& element){ return element.first == news_group;} );
+        [ng_name](const Newsgroup ng){ return ng.get_name() == ng_name;} );
     if(it == groups.end()){
-        vector<article> articles;
-        std::pair<string, vector<article> > group = make_pair(news_group, articles);
+        Newsgroup group(ng_name, ctr++); // init newsgroup
         groups.push_back(group);
         return true;
     }else{
@@ -46,63 +49,65 @@ bool database::create_group(string news_group){
     }
 }
 
-vector<string> database::list_articles(string news_group) const{
-    vector<string> article_names;
+vector<pair<int, string> > database::list_articles(int ng_id_nbr) const{
+    vector<pair<int, string> > articles;
     auto it = std::find_if( groups.begin(), groups.end(),
-        [&](const pair<string, vector<article> >& element){ return element.first == news_group;} );
+        [ng_id_nbr](const Newsgroup ng){ return ng.get_id_nbr() == ng_id_nbr;} );
 
     if(it == groups.end()){
-        throw std::invalid_argument("The requested news group could not be found");
+        throw BadNGException();
     }else{
-        for(auto e : (*it).second){
-            article_names.push_back(e.getTitle());
+        for(auto e : (*it).get_articles()){
+            articles.push_back(make_pair(e.get_ID(), e, getTitle()));
         }
     }
-    return article_names;
+    return articles;
 }
 
-article database::read(string news_group, string article_name) const{
-    auto it = std::find_if( groups.begin(), groups.end(),
-        [&](const pair<string, vector<article> >& element){ return element.first == news_group;} );
+bool database::read(int ng_id_nbr, int art_id_nbr, string& title, string& author, string& text) const{
+    auto ng_it = std::find_if( groups.begin(), groups.end(),
+        [ng_id_nbr](const Newsgroup ng){ return ng.get_id_nbr() == ng_id_nbr;} );
 
-    if(it == groups.end()){
-        throw std::invalid_argument("The requested news group cold not be found");
+    if(ng_it == groups.end()){
+        throw BadNGException();
     }else{
-        vector<article> articles = (*it).second;
-        for(auto i : articles){
-            if(i.getTitle() == article_name){
-                return i;
-            }
+        vector<Article> articles = ng_it->get_articles();
+        auto art_it = std::find_if( articles.begin(), articles.end(),
+        [art_id_nbr](const Article art){ return art.get_id_nbr() == art_id_nbr;} );
+        
+        if(art_it == groups.end()){
+            throw BadARTException();
+        } else {
+            title = art_it->getTitle();
+            author = art_it->getAuthor();
+            text = art_it->getText();
         }
-        throw std::invalid_argument("The requested article could not be found in the news group");
     }
+    return true;
 }
 
-bool database::write(string news_group, article art){
+bool database::write(int ng_id_nbr, string title, string author, string text){
         auto it = std::find_if(groups.begin(), groups.end(),
-        [&](const pair<string, vector<article> >& element){ return element.first == news_group;} );
+        [ng_id_nbr](const Newsgroup ng){ return ng.get_id_nbr() == ng_id_nbr;} );
 
         if(it == groups.end()){
-            throw std::invalid_argument("The requested news group could not be found");
+            throw BadNGException();
         }else{
-            (*it).second.push_back(art);
-            return true;
+            Article art(title, author, text, ctr++);
+            it->add_article(art);
         }
+        return true;
 }
 
-bool database::delete_article(string news_group, string article_name){
-    auto it = std::find_if(groups.begin(), groups.end(),
-        [&](const pair<string, vector<article> >& element){ return element.first == news_group;} );
-    
-    if(it == groups.end()){
-        throw std::invalid_argument("The requested news group could not be found");
+bool database::delete_article(int ng_id_nbr, string art_id_nbr){
+    auto ng_it = std::find_if( groups.begin(), groups.end(),
+        [ng_id_nbr](const Newsgroup ng){ return ng.get_id_nbr() == ng_id_nbr;} );
+
+    if(ng_it == groups.end()){
+        throw BadNGException();
     }else{
-        auto ele = std::find_if( (*it).second.begin(), (*it).second.end(),
-            [&](const article& element){ return element.getTitle() == article_name;} );
-        if(ele != (*it).second.end()){
-            (*it).second.erase(ele);
-            return true;
-        }
-        throw std::invalid_argument("The requested article could not be found in the news group");
+        vector<Article> articles = ng_it->get_articles();
+        auto art_it = std::find_if( articles.begin(), articles.end(),
+        [art_id_nbr](const Article art){ return art.get_id_nbr() == art_id_nbr;} );
     }
 }
