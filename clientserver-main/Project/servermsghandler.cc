@@ -1,7 +1,6 @@
 #include "servermsghandler.h"
 #include "connection.h"
 #include "connectionclosedexception.h"
-#include "messagehandler.h"
 #include "protocol.h"
 
 #include <iostream>
@@ -57,7 +56,7 @@ void Servermessagehandler::send_list(const std::shared_ptr<Connection>& conn, ve
     }
 }
 
-int Messagehandler::read_num_p(const std::shared_ptr<Connection>& conn){
+int Servermessagehandler::read_num_p(const std::shared_ptr<Connection>& conn){
     unsigned char par_type = conn->read();
     if (par_type != static_cast<int>(Protocol::PAR_NUM)){
         //throw some shit
@@ -66,7 +65,7 @@ int Messagehandler::read_num_p(const std::shared_ptr<Connection>& conn){
 }
 
 // reads string starting from number of bytes coming
-string Messagehandler::read_string_p(const std::shared_ptr<Connection>& conn){
+string Servermessagehandler::read_string_p(const std::shared_ptr<Connection>& conn){
     unsigned char par_type = conn->read();
     if (par_type != static_cast<int>(Protocol::PAR_STRING)){
         //throw some shit

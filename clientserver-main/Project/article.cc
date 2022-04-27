@@ -4,7 +4,7 @@
 #include <iostream>
 using std::string;
 
-article::article(std::string& t, std::string& a, std::string& txt): title{t}, author{a}, text{txt} {}
+article::article(std::string& t, std::string& a, std::string& txt, int id_nbr): title{t}, author{a}, text{txt}, id_nbr{id_nbr} {}
 
 // article::article(char* t, char* a, char* txt){
 //     string t_string(t);
@@ -22,4 +22,8 @@ string article::getText() const{
 
 string article::getTitle() const{
     return title;
+}
+
+int article::get_ID() const{
+    return id_nbr;
 }
