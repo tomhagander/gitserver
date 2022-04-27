@@ -52,8 +52,13 @@ void process_request(std::shared_ptr<Connection>& conn, database& db, Servermess
         }
         
         // database
-        bool success = db.create_group(name);
-        
+        bool success;
+        try{
+            success = db.create_group(name);
+        } catch (...){
+            throw std::runtime_error("Unknown server error");
+        }
+
         // answering
         conn->write(static_cast<int>(Protocol::ANS_CREATE_NG));
         if (success){
@@ -75,7 +80,12 @@ void process_request(std::shared_ptr<Connection>& conn, database& db, Servermess
         }
 
         // database
-        bool success = db.delete_group(ng_id_nbr);
+        bool success;
+        try {
+            success = db.delete_group(ng_id_nbr);
+        } catch (...) {
+            throw std::runtime_error("Unknown server error");
+        }
 
         // answering
         conn->write(static_cast<int>(Protocol::ANS_DELETE_NG));
@@ -132,7 +142,12 @@ void process_request(std::shared_ptr<Connection>& conn, database& db, Servermess
         }
 
         // database
-        bool success = db.write(ng_id_nbr, title, author, text);
+        bool success;
+        try{
+            success = db.write(ng_id_nbr, title, author, text);
+        } catch (...) {
+            success = false;
+        }
 
         // answering
         conn->write(static_cast<int>(Protocol::ANS_CREATE_ART));
@@ -158,16 +173,18 @@ void process_request(std::shared_ptr<Connection>& conn, database& db, Servermess
         // database
         bool success;
         // gillar inte err_type, säg till om ni kommer på ngt bättre
-        bool err_type; // 1 if bad ng number, 0 if bad art number, doesnt matter otherwise
+        Protocol err_type; // 1 if bad ng number, 0 if bad art number, doesnt matter otherwise
         try {
             db.delete_article(ng_id_nbr, art_id_nbr);
             success = true;
         } catch (BadNGException& e){
             success = false;
-            err_type = 1;
+            err_type = Protocol::ERR_NG_DOES_NOT_EXIST;
         } catch (BadARTException& e){
             success = false;
-            err_type = 0;
+            err_type = Protocol::ERR_ART_DOES_NOT_EXIST;
+        } catch (...){
+            throw std::runtime_error("Unknown server error");
         }
 
         // answering
@@ -176,11 +193,7 @@ void process_request(std::shared_ptr<Connection>& conn, database& db, Servermess
             conn->write(static_cast<int>(Protocol::ANS_ACK));
         } else {
             conn->write(static_cast<int>(Protocol::ANS_NAK));
-            if (err_type == 1){
-                conn->write(static_cast<int>(Protocol::ERR_NG_DOES_NOT_EXIST));
-            } else if (err_type == 0){
-                conn->write(static_cast<int>(Protocol::ERR_ART_DOES_NOT_EXIST));
-            }
+            conn->write(static_cast<int>(err_type));
         }
         conn->write(static_cast<int>(Protocol::ANS_END));
     }
@@ -211,6 +224,8 @@ void process_request(std::shared_ptr<Connection>& conn, database& db, Servermess
         } catch (BadARTException& e){
             success = false;
             err_type = Protocol::ERR_ART_DOES_NOT_EXIST;
+        } catch (...){
+            throw std::runtime_error("Unknown server error");
         }
 
         // answering

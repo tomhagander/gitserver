@@ -160,7 +160,6 @@ bool Messagehandler::com_delete_ng(const Connection& conn, int id_nbr){
 }
 
 
-// har fuckat med denna
 vector<pair<int, string> > Messagehandler::com_list_art(const Connection& conn, int ng_id_nbr){
     // writing command
     conn.write(static_cast<int>(Protocol::COM_LIST_ART));
@@ -169,7 +168,6 @@ vector<pair<int, string> > Messagehandler::com_list_art(const Connection& conn, 
 
     // reading answer
     unsigned char ans = conn.read();
-    cout << "read first byte answer" << endl;
     if (ans != static_cast<int>(Protocol::ANS_LIST_ART)){
         throw std::runtime_error("Wrong answer type or no answer: ");
     }
@@ -216,8 +214,12 @@ bool Messagehandler::com_create_art(const Connection& conn, int ng_id_nbr, strin
         success = true;
     } else if (acc_status == static_cast<int>(Protocol::ANS_NAK)){
         success = false;
-        throw std::runtime_error("Ans not accepted");
-        // något mer här?? NAK TYPE?
+        unsigned char nak_type = conn.read();
+        if (nak_type == static_cast<int>(Protocol::ERR_NG_DOES_NOT_EXIST)){
+            throw std::runtime_error("Newsgroup does not exist");
+        } else {
+            throw std::runtime_error("Unknown error");
+        }
     } else {
         throw std::runtime_error("Wierd answer: ");
     }

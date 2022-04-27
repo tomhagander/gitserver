@@ -109,14 +109,12 @@ bool database::delete_article(int ng_id_nbr, int art_id_nbr){
     if(ng_it == groups.end()){
         throw BadNGException();
     }else{
-        vector<Article> articles = ng_it->get_articles();
-        auto art_it = std::find_if( articles.begin(), articles.end(),
-        [art_id_nbr](const Article art){ return art.getIdNbr() == art_id_nbr;} );
-
-        if (art_it == articles.end()){
+        int success = ng_it->remove_article(art_id_nbr);
+        if (success){
+            return true;
+        } else {
             throw BadARTException();
         }
-        articles.erase(art_it);
     }
-    return true;
+    return false;
 }

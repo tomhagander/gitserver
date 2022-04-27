@@ -44,7 +44,7 @@ int app(const Connection& conn){
     cout << "Welcome to the newsserver! Type help for a list of operations" << endl;
     cout << "Type an operation: ";
     string input;
-    while(cin >> input){
+    while(getline(cin, input)){
         if (input == "help"){
             cout << "Commands: " << endl;
             cout << "listnewsgroups  - provides a list of existing newsgroups" << endl;
@@ -63,15 +63,19 @@ int app(const Connection& conn){
             } catch (std::exception& e) {
                 cout << "Error: " << e.what() << endl;
             }
-            for (vector<pair<int, string> >::iterator itr = groups.begin(); itr != groups.end(); itr++){
-                cout << itr->first << " " << itr->second << endl;
+            if (groups.size() == 0){
+                cout << "There are no newsgroups" << endl;
+            } else {
+                for (vector<pair<int, string> >::iterator itr = groups.begin(); itr != groups.end(); itr++){
+                    cout << itr->first << " " << itr->second << endl;
+                }
             }
 
         } else if (input == "createnewsgroup"){
             bool success = false;
             string prompt;
             cout << "Type the name of the new newsgroup: ";
-            cin >> prompt;
+            getline(cin, prompt);
             try {
                 success = msg.com_create_ng(conn, prompt);
             } catch (const std::exception& e){
@@ -83,28 +87,32 @@ int app(const Connection& conn){
 
         } else if (input == "deletenewsgroup"){
             bool success = false;
-            int prompt;
+            string nbr_input;
+            int ng_id_nbr;
             cout << "Type the id number of the newsgroup you want to delete: ";
+            getline(cin, nbr_input);
             try {
-                cin >> prompt;
+                ng_id_nbr = std::stoi(nbr_input);
             } catch (...) {
                 cout << "Wrong input format!" << endl;
                 break;
             }
             try {
-                success = msg.com_delete_ng(conn, prompt);
+                success = msg.com_delete_ng(conn, ng_id_nbr);
             } catch (const std::exception& e){
                 cout << "Error: " << e.what() << endl;
             }
             if (success){
-                cout << "Success! Deleted group number " << prompt << endl;
+                cout << "Success! Deleted group number " << ng_id_nbr << endl;
             }
 
         } else if (input == "listarticles"){
+            string nbr_input;
             int ng_id_nbr;
             cout << "Type the id number of your desired newsgroup: ";
+            getline(cin, nbr_input);
             try {
-                cin >> ng_id_nbr;
+                ng_id_nbr = std::stoi(nbr_input);
             } catch (...) {
                 cout << "Wrong input format!" << endl;
                 break;
@@ -114,28 +122,35 @@ int app(const Connection& conn){
                 articles = msg.com_list_art(conn, ng_id_nbr);
             } catch (std::exception& e) {
                 cout << "Error: " << e.what() << endl;
-            } for (vector<pair<int, string> >::iterator itr = articles.begin(); itr != articles.end(); itr++){
-                cout << itr->first << " " << itr->second << endl;
+            }
+            if (articles.size() == 0){
+                cout << "There are no articles in this newsgroup" << endl;
+            } else {
+                for (vector<pair<int, string> >::iterator itr = articles.begin(); itr != articles.end(); itr++){
+                    cout << itr->first << " " << itr->second << endl;
+                }
             }
 
         } else if (input == "createarticle"){
             bool success = false;
+            string nbr_input;
             int ng_id_nbr;
             string title;
             string author;
             string text;
+            cout << "Type the id number of your desired newsgroup: ";
+            getline(cin, nbr_input);
             try {
-                cout << "Type the id number of your desired newsgroup: ";
-                cin >> ng_id_nbr;
+                ng_id_nbr = std::stoi(nbr_input);
             } catch (...) {
                 cout << "Wrong input format! " << endl;
             }
             cout << "Article title: ";
-            cin >> title;
+            getline(cin, title);
             cout << "Article author: ";
-            cin >> author;
+            getline(cin, author);
             cout << "Article text: ";
-            cin >> text;
+            getline(cin, text);
 
             try {
                 success = msg.com_create_art(conn, ng_id_nbr, title, author, text);
@@ -148,13 +163,17 @@ int app(const Connection& conn){
 
         } else if (input == "deletearticle"){
             bool success = false;
+            string ng_input;
+            string art_input;
             int ng_id_nbr;
             int art_id_nbr;
+            cout << "Type the id number of the article's newsgroup: ";
+            getline(cin, ng_input);
+            cout << "Type the id number of the article to be deleted: ";
+            getline(cin, art_input);
             try {
-                cout << "Type the id number of the article's newsgroup: ";
-                cin >> ng_id_nbr;
-                cout << "Type the id number of the article to be deleted: ";
-                cin >> art_id_nbr;
+                ng_id_nbr = std::stoi(ng_input);
+                art_id_nbr = std::stoi(art_input);
             } catch (...) {
                 cout << "Wrong input format! " << endl;
             }
@@ -174,11 +193,15 @@ int app(const Connection& conn){
             string text;
             int ng_id_nbr;
             int art_id_nbr;
+            string ng_input;
+            string art_input;
+            cout << "Type the id number of the article's newsgroup: ";
+            getline(cin, ng_input);
+            cout << "Type the id number of the article: ";
+            getline(cin, art_input);
             try {
-                cout << "Type the id number of the article's newsgroup: ";
-                cin >> ng_id_nbr;
-                cout << "Type the id number of the article: ";
-                cin >> art_id_nbr;
+                ng_id_nbr = std::stoi(ng_input);
+                art_id_nbr = std::stoi(art_input);
             } catch (...) {
                 cout << "Wrong input format! " << endl;
             }

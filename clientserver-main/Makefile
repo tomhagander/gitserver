@@ -12,7 +12,7 @@ DEPFLAGS = -MT $@ -MMD -MP -MF $*.d
 # -g is for debugging.
 CPPFLAGS =  -Iinclude
 CXXFLAGS =  -O2 -Wall -Wextra -pedantic-errors -Wold-style-cast 
-CXXFLAGS += -std=c++11 
+CXXFLAGS += -std=c++17
 CXXFLAGS += -g
 CXXFLAGS += $(DEPFLAGS)
 LDFLAGS =   -g -Llib

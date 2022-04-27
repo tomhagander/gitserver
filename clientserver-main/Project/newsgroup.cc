@@ -24,9 +24,14 @@ void Newsgroup::add_article(Article art) {
 	articles.push_back(art);
 }
 
-void Newsgroup::remove_article(int id_nbr) {
+int Newsgroup::remove_article(int id_nbr) {
     auto art_it = std::find_if( articles.begin(), articles.end(), 
 	[id_nbr](const Article art){ return art.getIdNbr() == id_nbr;} );
-	articles.erase(art_it);
+	if (art_it == articles.end()){
+		return 0;
+	} else {
+		articles.erase(art_it);
+		return 1;
+	}
 }
 

@@ -16,7 +16,7 @@ class Newsgroup {
 		string get_title() const;
 		vector<Article> get_articles() const;
 		void add_article(Article art);
-		void remove_article(int ng_id_nbr);
+		int remove_article(int ng_id_nbr);
 	private:
 		string title;
 		int id_nbr;
