@@ -56,7 +56,6 @@ void process_request(std::shared_ptr<Connection>& conn, database& db, Servermess
         try{
             success = db.create_group(name);
         } catch (...){
-            cout << "should throw" << endl;
             throw std::runtime_error("Unknown server error");
         }
 
