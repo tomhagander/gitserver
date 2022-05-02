@@ -28,7 +28,7 @@ database::database() {
 		getline(counter, nbr);
 		ctr = std::stoi(nbr);
 	} catch (...) {
-		ctr = -1;
+		ctr = 0;
 	}
 	counter.close();
 }
@@ -36,11 +36,10 @@ database::database() {
 database::~database() = default;
 
 int database::update_ctr() {
-	std::__fs::filesystem::remove("root/counter.txt");
 	std::ofstream counter("root/counter.txt");
-	counter << ++ctr;
+	counter << ctr;
 	counter.close();
-	return ctr;
+	return ctr++;
 }
 
 vector<pair<int, string> > database::list_groups() const{
@@ -48,7 +47,7 @@ vector<pair<int, string> > database::list_groups() const{
 	for (auto dir_entry : std::__fs::filesystem::directory_iterator("root")) {
 		std::ifstream infile(dir_entry.path().u8string() + "/info.txt");
 
-		if (dir_entry.path().u8string() == "root/counter.txt") {
+		if (dir_entry.path().u8string() == "root/counter.txt") {	
 			continue;
 		}
 		string title;
@@ -63,6 +62,9 @@ vector<pair<int, string> > database::list_groups() const{
 
 bool database::delete_group(int ng_id_nbr) {
 	for (auto dir_entry : std::__fs::filesystem::directory_iterator("root")) {
+		if (dir_entry.path().u8string() == "root/counter.txt") {	
+			continue;
+		}
 		std::ifstream infile(dir_entry.path().u8string() + "/info.txt");
 		string id;
 		getline(infile, id);
@@ -76,6 +78,9 @@ bool database::delete_group(int ng_id_nbr) {
 
 bool database::create_group(string ng_name) {
 	for (auto dir_entry : std::__fs::filesystem::directory_iterator("root")) {
+		if (dir_entry.path().u8string() == "root/counter.txt") {	
+			continue;
+		}
 		std::ifstream infile(dir_entry.path().u8string() + "/info.txt");
 		string id;
 		string title;
@@ -97,22 +102,28 @@ bool database::create_group(string ng_name) {
 vector<pair<int, string> > database::list_articles(int ng_id_nbr) const {
 	vector<pair<int, string> > groups;
 	for (auto dir_entry : std::__fs::filesystem::directory_iterator("root/" + std::to_string(ng_id_nbr))) {
-		if (dir_entry.path().u8string() == "root/" + std::to_string(ng_id_nbr) + "/" + "info.txt") {
+		if (dir_entry.path().u8string() == "root/" + std::to_string(ng_id_nbr) + "/info.txt") {
 			continue;
 		}
-		std::ifstream infile(dir_entry.path().u8string());
+		std::ifstream infile(dir_entry.path().u8string() + "/id.txt");
 		string id;
-		string title;
 		getline(infile, id);
-		getline(infile, title);
-		groups.push_back(std::make_pair(std::stoi(id), title));
 		infile.close();
+		std::ifstream article(dir_entry.path().u8string() + "/article.txt");
+		string title;
+		getline(article, title);
+		cout << id << title << endl;
+		groups.push_back(std::make_pair(std::stoi(id), title));
+		article.close();
 	}
 	return groups;
 }
 
 bool database::read(int ng_id_nbr, int art_id_nbr, string& title, string& author, string& text) const{
 	for (auto dir_entry : std::__fs::filesystem::directory_iterator("root")) {
+		if (dir_entry.path().u8string() == "root/counter.txt") {	
+			continue;
+		}
 		std::ifstream infile(dir_entry.path().u8string() + "/info.txt");
 		string id;
 		getline(infile, id);
@@ -143,6 +154,9 @@ bool database::read(int ng_id_nbr, int art_id_nbr, string& title, string& author
 bool database::write(int ng_id_nbr, string title, string author, string text){
 
 	for (auto dir_entry : std::__fs::filesystem::directory_iterator("root")) {
+		if (dir_entry.path().u8string() == "root/counter.txt") {	
+			continue;
+		}
 		std::ifstream infile(dir_entry.path().u8string() + "/info.txt");
 		string id;
 		getline(infile, id);
@@ -165,19 +179,25 @@ bool database::write(int ng_id_nbr, string title, string author, string text){
 
 bool database::delete_article(int ng_id_nbr, int art_id_nbr){
 	for (auto dir_entry : std::__fs::filesystem::directory_iterator("root")) {
+		if (dir_entry.path().u8string() == "root/counter.txt") {	
+			continue;
+		}
 		std::ifstream infile(dir_entry.path().u8string() + "/info.txt");
-		string id;
-		getline(infile, id);
+		string ng_id;
+		getline(infile, ng_id);
 		infile.close();
 		
-		if (std::stoi(id) == ng_id_nbr) {
+		if (std::stoi(ng_id) == ng_id_nbr) {
 			for (auto ng_entry : std::__fs::filesystem::directory_iterator(dir_entry.path())) {
+				if (ng_entry.path().u8string() == "root/" + ng_id + "/info.txt") {	
+					continue;
+				}
 				std::ifstream infile(ng_entry.path().u8string() + "/id.txt");
-				string id;
-				getline(infile, id);
+				string art_id;
+				getline(infile, art_id);
 				infile.close();
-				if(std::stoi(id) == art_id_nbr) {
-					std::__fs::filesystem::remove(ng_entry.path().u8string());
+				if(std::stoi(art_id) == art_id_nbr) {
+					std::__fs::filesystem::remove_all(ng_entry.path());
 					return true;
 				} else {
 					throw BadARTException();
