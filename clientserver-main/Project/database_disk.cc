@@ -112,7 +112,6 @@ vector<pair<int, string> > database::list_articles(int ng_id_nbr) const {
 		std::ifstream article(dir_entry.path().u8string() + "/article.txt");
 		string title;
 		getline(article, title);
-		cout << id << title << endl;
 		groups.push_back(std::make_pair(std::stoi(id), title));
 		article.close();
 	}
@@ -192,17 +191,16 @@ bool database::delete_article(int ng_id_nbr, int art_id_nbr){
 				if (ng_entry.path().u8string() == "root/" + ng_id + "/info.txt") {	
 					continue;
 				}
-				std::ifstream infile(ng_entry.path().u8string() + "/id.txt");
+				std::ifstream idfile(ng_entry.path().u8string() + "/id.txt");
 				string art_id;
-				getline(infile, art_id);
+				getline(idfile, art_id);
 				infile.close();
 				if(std::stoi(art_id) == art_id_nbr) {
 					std::__fs::filesystem::remove_all(ng_entry.path());
 					return true;
-				} else {
-					throw BadARTException();
 				}
 			}
+			throw BadARTException();
 		}
 	}
 	throw BadNGException();
