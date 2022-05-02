@@ -79,7 +79,6 @@ vector<pair<int, string> > Messagehandler::com_list_ng(const Connection& conn){
     // reading answer
     unsigned char ans = conn.read();
     if (ans != static_cast<int>(Protocol::ANS_LIST_NG)){
-        cout << "väntar 27" << +ans << endl; 
         throw std::runtime_error("Wrong answer type or no answer: ");
     }
     
@@ -208,24 +207,20 @@ bool Messagehandler::com_create_art(const Connection& conn, int ng_id_nbr, strin
     // reading answer
     bool success;
     unsigned char ans = conn.read();
-    cout << "ans" << +ans << endl; 
     if (ans != static_cast<int>(Protocol::ANS_CREATE_ART)){
         throw std::runtime_error("Wrong answer type or no answer: ");
     }
     unsigned char acc_status = conn.read();
     unsigned char nak_type;
-    cout << "acc_status" << +acc_status << endl; 
     if (acc_status == static_cast<int>(Protocol::ANS_ACK)){
         success = true;
     } else if (acc_status == static_cast<int>(Protocol::ANS_NAK)){
         success = false;
-        nak_type = conn.read();
-        cout << "nak_type" << +nak_type << endl; 
+        nak_type = conn.read(); 
     } else {
         throw std::runtime_error("Wierd answer: ");
     }
     unsigned char ans_end = conn.read();
-    cout << "ans end" << +ans_end << endl; 
     if (ans_end != static_cast<int>(Protocol::ANS_END)){
         throw std::runtime_error("Answer not terminated");
     }
