@@ -26,7 +26,7 @@ database::database() {
 	string nbr;
 	try {
 		getline(counter, nbr);
-		ctr = std::stoi(nbr);
+		ctr = std::stoi(nbr) + 1;
 	} catch (...) {
 		ctr = 0;
 	}
@@ -129,21 +129,23 @@ bool database::read(int ng_id_nbr, int art_id_nbr, string& title, string& author
 		infile.close();
 		if (std::stoi(id) == ng_id_nbr) {
 			for (auto ng_entry : std::__fs::filesystem::directory_iterator(dir_entry.path())) {
-				std::ifstream infile(ng_entry.path().u8string() + "/id.txt");
-				string id;
-				getline(infile, id);
-				infile.close();
-				if(std::stoi(id) == art_id_nbr) {
-						std::ifstream infile("root/" + std::to_string(ng_id_nbr) + "/" + std::to_string(art_id_nbr) + "/article.txt");
-						getline(infile, title);
-						getline(infile, author);
-						getline(infile, text);
-						infile.close();
-						return true;
-				} else {
-					throw BadARTException();
+				if (ng_entry.path().u8string() == "root/" + id + "/info.txt") {	
+					continue;
 				}
-			}	
+				std::ifstream fileid(ng_entry.path().u8string() + "/id.txt");
+				string art_id;
+				getline(fileid, art_id);
+				fileid.close();
+				if(std::stoi(art_id) == art_id_nbr) {
+						std::ifstream article(ng_entry.path().u8string() + "/article.txt");
+						getline(article, title);
+						getline(article, author);
+						getline(article, text);
+						article.close();
+						return true;
+				}
+			}
+			throw BadARTException();	
 		}
 	}
 	throw BadNGException();
