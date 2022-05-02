@@ -141,6 +141,7 @@ bool Messagehandler::com_delete_ng(const Connection& conn, int id_nbr){
     // reading answer
     bool success;
     unsigned char ans = conn.read();
+    unsigned char nak_type;
     if (ans != static_cast<int>(Protocol::ANS_DELETE_NG)){
         throw std::runtime_error("Wrong answer type or no answer: ");
     }
@@ -149,13 +150,20 @@ bool Messagehandler::com_delete_ng(const Connection& conn, int id_nbr){
         success = true;
     } else if (acc_status == static_cast<int>(Protocol::ANS_NAK)){
         success = false;
-        throw std::runtime_error("Ans not accepted");
+        nak_type = conn.read();
     } else {
         throw std::runtime_error("Wierd answer: ");
     }
     unsigned char ans_end = conn.read();
     if (ans_end != static_cast<int>(Protocol::ANS_END)){
         throw std::runtime_error("Answer not terminated");
+    }
+    if (!success){
+        if (nak_type == static_cast<int>(Protocol::ERR_NG_DOES_NOT_EXIST)){
+            throw std::runtime_error("Newsgroup does not exist");
+        } else {
+            throw std::runtime_error("Unknown error");
+        }
     }
     return success;
 }
@@ -187,7 +195,11 @@ vector<pair<int, string> > Messagehandler::com_list_art(const Connection& conn, 
         }
         return articles;
     } else if (ans_acc == static_cast<int>(Protocol::ANS_NAK)) {
-        // unsigned char err_msg = conn.read();
+        unsigned char err_msg = conn.read();
+        unsigned char ans_end = conn.read();
+        if (ans_end != static_cast<int>(Protocol::ANS_END)){
+            throw std::runtime_error("Answer not terminated");
+        }
         throw std::runtime_error("Not accepted: ");
     } else {
         throw std::runtime_error("Wierd answer: ");
