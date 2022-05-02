@@ -145,8 +145,10 @@ void process_request(std::shared_ptr<Connection>& conn, database& db, Servermess
         bool success;
         try{
             success = db.write(ng_id_nbr, title, author, text);
+            std::cout << "success" << std::endl;
         } catch (...) {
             success = false;
+            std::cout << "success false" << endl;
         }
 
         // answering

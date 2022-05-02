@@ -119,6 +119,7 @@ bool Messagehandler::com_create_ng(const Connection& conn, string name){
         success = true;
     } else if (acc_status == static_cast<int>(Protocol::ANS_NAK)){
         success = false;
+        unsigned char nak_error = conn.read();
         throw std::runtime_error("Ans not accepted");
     } else {
         throw std::runtime_error("Wierd answer: ");
@@ -224,6 +225,8 @@ bool Messagehandler::com_create_art(const Connection& conn, int ng_id_nbr, strin
         throw std::runtime_error("Wierd answer: ");
     }
     unsigned char ans_end = conn.read();
+    cout << "couting" << endl;
+    cout << ans_end << endl;
     if (ans_end != static_cast<int>(Protocol::ANS_END)){
         throw std::runtime_error("Answer not terminated");
     }

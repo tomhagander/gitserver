@@ -36,7 +36,7 @@ test: test_coding
 articletest: articletest.o article.o
 database_primary_tester: database_primary_tester.o database_primary.o article.o
 client: client.o messagehandler.o
-server_interface: server_interface.o database_disk.o article.o newsgroup.o servermsghandler.o
+server_interface: server_interface.o database_primary.o article.o newsgroup.o servermsghandler.o
 
 # Phony targets
 .PHONY: all test clean distclean

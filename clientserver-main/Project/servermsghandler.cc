@@ -3,6 +3,8 @@
 #include "connectionclosedexception.h"
 #include "protocol.h"
 
+#include "clientmisbehavedexception.h"
+
 #include <iostream>
 #include <string>
 
@@ -59,7 +61,7 @@ void Servermessagehandler::send_list(const std::shared_ptr<Connection>& conn, ve
 int Servermessagehandler::read_num_p(const std::shared_ptr<Connection>& conn){
     unsigned char par_type = conn->read();
     if (par_type != static_cast<int>(Protocol::PAR_NUM)){
-        //throw some shit
+        throw ClientMisbehavedException();
     }
     return readNumber(conn);
 }
@@ -68,7 +70,7 @@ int Servermessagehandler::read_num_p(const std::shared_ptr<Connection>& conn){
 string Servermessagehandler::read_string_p(const std::shared_ptr<Connection>& conn){
     unsigned char par_type = conn->read();
     if (par_type != static_cast<int>(Protocol::PAR_STRING)){
-        //throw some shit
+        throw ClientMisbehavedException();
     }
     int num_chars = readNumber(conn);
     string s;
