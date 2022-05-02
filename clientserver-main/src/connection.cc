@@ -41,6 +41,8 @@
 #include <sys/uio.h>    /* read(), write() */
 #include <unistd.h>     /* close(), read(), write() */
 
+#include <fstream>
+
 bool Connection::ignoresPipeSignals = false;
 
 Connection::Connection()
@@ -102,6 +104,7 @@ void Connection::write(unsigned char ch) const
         if (my_socket == no_socket) {
                 error("Write attempted on a not properly opened connection");
         }
+
         int count = ::write(my_socket, &ch, 1);
 
         if (count != 1) {

@@ -56,6 +56,7 @@ void process_request(std::shared_ptr<Connection>& conn, database& db, Servermess
         try{
             success = db.create_group(name);
         } catch (...){
+            cout << "should throw" << endl;
             throw std::runtime_error("Unknown server error");
         }
 
@@ -145,10 +146,10 @@ void process_request(std::shared_ptr<Connection>& conn, database& db, Servermess
         bool success;
         try{
             success = db.write(ng_id_nbr, title, author, text);
-            std::cout << "success" << std::endl;
-        } catch (...) {
+        } catch (BadNGException& e) {
             success = false;
-            std::cout << "success false" << endl;
+        } catch (BadARTException& e){
+            success = false;
         }
 
         // answering

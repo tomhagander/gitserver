@@ -79,6 +79,7 @@ vector<pair<int, string> > Messagehandler::com_list_ng(const Connection& conn){
     // reading answer
     unsigned char ans = conn.read();
     if (ans != static_cast<int>(Protocol::ANS_LIST_NG)){
+        cout << "väntar 27" << +ans << endl; 
         throw std::runtime_error("Wrong answer type or no answer: ");
     }
     
@@ -207,28 +208,31 @@ bool Messagehandler::com_create_art(const Connection& conn, int ng_id_nbr, strin
     // reading answer
     bool success;
     unsigned char ans = conn.read();
+    cout << "ans" << +ans << endl; 
     if (ans != static_cast<int>(Protocol::ANS_CREATE_ART)){
         throw std::runtime_error("Wrong answer type or no answer: ");
     }
     unsigned char acc_status = conn.read();
+    unsigned char nak_type;
+    cout << "acc_status" << +acc_status << endl; 
     if (acc_status == static_cast<int>(Protocol::ANS_ACK)){
         success = true;
     } else if (acc_status == static_cast<int>(Protocol::ANS_NAK)){
         success = false;
-        unsigned char nak_type = conn.read();
-        if (nak_type == static_cast<int>(Protocol::ERR_NG_DOES_NOT_EXIST)){
-            throw std::runtime_error("Newsgroup does not exist");
-        } else {
-            throw std::runtime_error("Unknown error");
-        }
+        nak_type = conn.read();
+        cout << "nak_type" << +nak_type << endl; 
     } else {
         throw std::runtime_error("Wierd answer: ");
     }
     unsigned char ans_end = conn.read();
-    cout << "couting" << endl;
-    cout << ans_end << endl;
+    cout << "ans end" << +ans_end << endl; 
     if (ans_end != static_cast<int>(Protocol::ANS_END)){
         throw std::runtime_error("Answer not terminated");
+    }
+    if (nak_type == static_cast<int>(Protocol::ERR_NG_DOES_NOT_EXIST)){
+        throw std::runtime_error("Newsgroup does not exist");
+    } else {
+        throw std::runtime_error("Unknown error");
     }
     return success;
 }
@@ -247,24 +251,25 @@ bool Messagehandler::com_delete_art(const Connection& conn, int ng_id_nbr, int a
         throw std::runtime_error("Wrong answer type or no answer: ");
     }
     unsigned char acc_status = conn.read();
+    unsigned char err_type;
     if (acc_status == static_cast<int>(Protocol::ANS_ACK)){
         success = true;
     } else if (acc_status == static_cast<int>(Protocol::ANS_NAK)){
         success = false;
-        unsigned char err_type = conn.read();
-        if (err_type == static_cast<int>(Protocol::ERR_NG_DOES_NOT_EXIST)){
-            throw std::runtime_error("Ans not accepted: ng does not exist");
-        } else if (err_type == static_cast<int>(Protocol::ERR_ART_DOES_NOT_EXIST)){
-            throw std::runtime_error("Ans not accepted: article does not exist");
-        } else {
-            throw std::runtime_error("Wierd answer: ");
-        }
+        err_type = conn.read();
     } else {
         throw std::runtime_error("Wierd answer: ");
     }
     unsigned char ans_end = conn.read();
     if (ans_end != static_cast<int>(Protocol::ANS_END)){
         throw std::runtime_error("Answer not terminated");
+    }
+    if (err_type == static_cast<int>(Protocol::ERR_NG_DOES_NOT_EXIST)){
+        throw std::runtime_error("Ans not accepted: ng does not exist");
+    } else if (err_type == static_cast<int>(Protocol::ERR_ART_DOES_NOT_EXIST)){
+        throw std::runtime_error("Ans not accepted: article does not exist");
+    } else {
+        throw std::runtime_error("Wierd answer: ");
     }
     return success;
 }
@@ -283,25 +288,26 @@ void Messagehandler::com_get_art(const Connection& conn, int ng_id_nbr, int art_
         throw std::runtime_error("Wrong answer type or no answer: ");
     }
     unsigned char ans_status = conn.read();
+    unsigned char err_type;
     if (ans_status == static_cast<int>(Protocol::ANS_ACK)){
         title = read_string_p(conn);
         author = read_string_p(conn);
         text = read_string_p(conn);
     } else if (ans_status == static_cast<int>(Protocol::ANS_NAK)){
-        unsigned char err_type = conn.read();
-        if (err_type == static_cast<int>(Protocol::ERR_NG_DOES_NOT_EXIST)){
-            throw std::runtime_error("Ans not accepted: ng does not exist");
-        } else if (err_type == static_cast<int>(Protocol::ERR_ART_DOES_NOT_EXIST)){
-            throw std::runtime_error("Ans not accepted: article does not exist");
-        } else {
-            throw std::runtime_error("Wierd answer: ");
-        }
+        err_type = conn.read();
     } else {
         throw std::runtime_error("Wierd answer: ");
     }
     unsigned char ans_end = conn.read();
     if (ans_end != static_cast<int>(Protocol::ANS_END)){
         throw std::runtime_error("Answer not terminated");
+    }
+    if (err_type == static_cast<int>(Protocol::ERR_NG_DOES_NOT_EXIST)){
+        throw std::runtime_error("Ans not accepted: ng does not exist");
+    } else if (err_type == static_cast<int>(Protocol::ERR_ART_DOES_NOT_EXIST)){
+        throw std::runtime_error("Ans not accepted: article does not exist");
+    } else {
+        throw std::runtime_error("Wierd answer: ");
     }
 
 }

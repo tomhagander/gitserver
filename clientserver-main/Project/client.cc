@@ -142,15 +142,17 @@ int app(const Connection& conn){
             getline(cin, nbr_input);
             try {
                 ng_id_nbr = std::stoi(nbr_input);
+                cout << "Article title: ";
+                getline(cin, title);
+                cout << "Article author: ";
+                getline(cin, author);
+                cout << "Article text: ";
+                getline(cin, text);
             } catch (...) {
                 cout << "Wrong input format! " << endl;
+                continue;
             }
-            cout << "Article title: ";
-            getline(cin, title);
-            cout << "Article author: ";
-            getline(cin, author);
-            cout << "Article text: ";
-            getline(cin, text);
+            
 
             try {
                 success = msg.com_create_art(conn, ng_id_nbr, title, author, text);
