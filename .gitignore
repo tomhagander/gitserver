@@ -441,3 +441,4 @@ clientserver-main/example/myserver
 clientserver-main/.DS_Store
 clientserver-main/Project/client
 clientserver-main/Project/root
+clientserver-main/Project/server_interface
