@@ -14,7 +14,6 @@ class Messagehandler {
 
         ~Messagehandler();
 
-        // MEMORY??
         // returns list of pairs with id number and name
         std::vector<std::pair<int, std::string> > com_list_ng(const Connection& conn);
 
@@ -24,7 +23,6 @@ class Messagehandler {
         // returns true if successful otherwise false
         bool com_delete_ng(const Connection& conn, int ng_id_nbr);
 
-        //MEMORY??
         // returns list of pairs with id nbr and title
         std::vector<std::pair<int, std::string> > com_list_art(const Connection& conn, int ng_id_nbr);
 

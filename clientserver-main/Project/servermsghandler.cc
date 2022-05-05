@@ -66,7 +66,6 @@ int Servermessagehandler::read_num_p(const std::shared_ptr<Connection>& conn){
     return readNumber(conn);
 }
 
-// reads string starting from number of bytes coming
 string Servermessagehandler::read_string_p(const std::shared_ptr<Connection>& conn){
     unsigned char par_type = conn->read();
     if (par_type != static_cast<int>(Protocol::PAR_STRING)){

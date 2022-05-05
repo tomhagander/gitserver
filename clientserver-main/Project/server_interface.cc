@@ -5,7 +5,7 @@
 #include "database.h"
 #include "servermsghandler.h"
 
-// own exception
+
 #include "clientmisbehavedexception.h"
 #include "badartnumber.h"
 #include "badngnumber.h"
@@ -26,24 +26,21 @@ using std::vector;
 void process_request(std::shared_ptr<Connection>& conn, database& db, Servermessagehandler& smsg) {
     unsigned char com = conn->read();
 
-    // case listnewsgroups
     if (com == static_cast<int>(Protocol::COM_LIST_NG)){
 
-        // reading
         unsigned char com_end = conn->read();
         if (com_end != static_cast<int>(Protocol::COM_END)){
             throw ClientMisbehavedException();
         }
 
-        // answering (and database)
+
         conn->write(static_cast<int>(Protocol::ANS_LIST_NG));
         smsg.send_list(conn, db.list_groups());
         conn->write(static_cast<int>(Protocol::ANS_END));
 
     } 
-    // case createnewsgroup
+
     else if (com == static_cast<int>(Protocol::COM_CREATE_NG)) {
-        //reading
         string name = smsg.read_string_p(conn);
 
         unsigned char com_end = conn->read();
@@ -51,7 +48,6 @@ void process_request(std::shared_ptr<Connection>& conn, database& db, Servermess
             throw ClientMisbehavedException();
         }
         
-        // database
         bool success;
         try{
             success = db.create_group(name);
@@ -59,7 +55,6 @@ void process_request(std::shared_ptr<Connection>& conn, database& db, Servermess
             throw std::runtime_error("Unknown server error");
         }
 
-        // answering
         conn->write(static_cast<int>(Protocol::ANS_CREATE_NG));
         if (success){
             conn->write(static_cast<int>(Protocol::ANS_ACK));
@@ -69,9 +64,8 @@ void process_request(std::shared_ptr<Connection>& conn, database& db, Servermess
         }
         conn->write(static_cast<int>(Protocol::ANS_END));
     }
-    // case deletenewsgroup
+
     else if (com == static_cast<int>(Protocol::COM_DELETE_NG)){
-        // reading
         int ng_id_nbr = smsg.read_num_p(conn);
 
         unsigned char com_end = conn->read();
@@ -79,7 +73,6 @@ void process_request(std::shared_ptr<Connection>& conn, database& db, Servermess
             throw ClientMisbehavedException();
         }
 
-        // database
         bool success;
         try {
             success = db.delete_group(ng_id_nbr);
@@ -87,7 +80,6 @@ void process_request(std::shared_ptr<Connection>& conn, database& db, Servermess
             throw std::runtime_error("Unknown server error");
         }
 
-        // answering
         conn->write(static_cast<int>(Protocol::ANS_DELETE_NG));
         if (success){
             conn->write(static_cast<int>(Protocol::ANS_ACK));
@@ -97,9 +89,8 @@ void process_request(std::shared_ptr<Connection>& conn, database& db, Servermess
         }
         conn->write(static_cast<int>(Protocol::ANS_END));
     }
-    // case listarticles
+
     else if (com == static_cast<int>(Protocol::COM_LIST_ART)) {
-        // reading
         int ng_id_nbr = smsg.read_num_p(conn);
 
         unsigned char com_end = conn->read();
@@ -107,17 +98,15 @@ void process_request(std::shared_ptr<Connection>& conn, database& db, Servermess
             throw ClientMisbehavedException();
         }
 
-        // database
         bool success;
         vector<pair<int, string> > articles;
         try {
             articles = db.list_articles(ng_id_nbr);
             success = true;
-        } catch (...){ // borde dela upp det här i specifika mfkers sen
+        } catch (...){ 
             success = false;
         }
 
-        // answering
         conn->write(static_cast<int>(Protocol::ANS_LIST_ART));
         if (success) {
             conn->write(static_cast<int>(Protocol::ANS_ACK));
@@ -128,9 +117,8 @@ void process_request(std::shared_ptr<Connection>& conn, database& db, Servermess
         }
         conn->write(static_cast<int>(Protocol::ANS_END));
     }
-    // case createarticle
+
     else if (com == static_cast<int>(Protocol::COM_CREATE_ART)){
-        // reading
         int ng_id_nbr = smsg.read_num_p(conn);
         string title = smsg.read_string_p(conn);
         string author = smsg.read_string_p(conn);
@@ -141,7 +129,6 @@ void process_request(std::shared_ptr<Connection>& conn, database& db, Servermess
             throw ClientMisbehavedException();
         }
 
-        // database
         bool success;
         try{
             success = db.write(ng_id_nbr, title, author, text);
@@ -151,7 +138,6 @@ void process_request(std::shared_ptr<Connection>& conn, database& db, Servermess
             success = false;
         }
 
-        // answering
         conn->write(static_cast<int>(Protocol::ANS_CREATE_ART));
         if (success) {
             conn->write(static_cast<int>(Protocol::ANS_ACK));
@@ -161,9 +147,8 @@ void process_request(std::shared_ptr<Connection>& conn, database& db, Servermess
         }
         conn->write(static_cast<int>(Protocol::ANS_END));
     }
-    // case deletearticle
+
     else if (com == static_cast<int>(Protocol::COM_DELETE_ART)){
-        // reading
         int ng_id_nbr = smsg.read_num_p(conn);
         int art_id_nbr = smsg.read_num_p(conn);
 
@@ -172,10 +157,8 @@ void process_request(std::shared_ptr<Connection>& conn, database& db, Servermess
             throw ClientMisbehavedException();
         }
 
-        // database
         bool success;
-        // gillar inte err_type, säg till om ni kommer på ngt bättre
-        Protocol err_type; // 1 if bad ng number, 0 if bad art number, doesnt matter otherwise
+        Protocol err_type;
         try {
             db.delete_article(ng_id_nbr, art_id_nbr);
             success = true;
@@ -189,7 +172,6 @@ void process_request(std::shared_ptr<Connection>& conn, database& db, Servermess
             throw std::runtime_error("Unknown server error");
         }
 
-        // answering
         conn->write(static_cast<int>(Protocol::ANS_DELETE_ART));
         if (success) {
             conn->write(static_cast<int>(Protocol::ANS_ACK));
@@ -199,9 +181,7 @@ void process_request(std::shared_ptr<Connection>& conn, database& db, Servermess
         }
         conn->write(static_cast<int>(Protocol::ANS_END));
     }
-    // case getarticle
     else if (com == static_cast<int>(Protocol::COM_GET_ART)){
-        // reading
         int ng_id_nbr = smsg.read_num_p(conn);
         int art_id_nbr = smsg.read_num_p(conn);
 
@@ -210,7 +190,6 @@ void process_request(std::shared_ptr<Connection>& conn, database& db, Servermess
             throw ClientMisbehavedException();
         }
 
-        // database
         string title;
         string author; 
         string text;
@@ -230,7 +209,6 @@ void process_request(std::shared_ptr<Connection>& conn, database& db, Servermess
             throw std::runtime_error("Unknown server error");
         }
 
-        // answering
         conn->write(static_cast<int>(Protocol::ANS_GET_ART));
         if (success) {
             conn->write(static_cast<int>(Protocol::ANS_ACK));
@@ -294,7 +272,7 @@ int main(int argc, char* argv[]) {
     Servermessagehandler smsg{};
 
     while(true) {
-        serve_one(server, db, smsg);
+        serve_one(server, db, smsg);    
     }
     return 0;
 }

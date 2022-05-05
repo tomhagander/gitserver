@@ -72,11 +72,9 @@ void Messagehandler::write_string_p(const Connection& conn, string s){
 }
 
 vector<pair<int, string> > Messagehandler::com_list_ng(const Connection& conn){
-    // writing command
     conn.write(static_cast<int>(Protocol::COM_LIST_NG));
     conn.write(static_cast<int>(Protocol::COM_END));
 
-    // reading answer
     unsigned char ans = conn.read();
     if (ans != static_cast<int>(Protocol::ANS_LIST_NG)){
         throw std::runtime_error("Wrong answer type or no answer: ");
@@ -85,7 +83,6 @@ vector<pair<int, string> > Messagehandler::com_list_ng(const Connection& conn){
     int nbr_ng = read_num_p(conn);
     vector<pair<int, string> > groups(nbr_ng);
 
-    // bra med try?? I DUNNO
     try {
         for (vector<pair<int, string> >::iterator itr = groups.begin(); itr != groups.end(); itr++){
             int id_num = read_num_p(conn);
@@ -103,12 +100,10 @@ vector<pair<int, string> > Messagehandler::com_list_ng(const Connection& conn){
 }
 
 bool Messagehandler::com_create_ng(const Connection& conn, string name){
-    // writing command
     conn.write(static_cast<int>(Protocol::COM_CREATE_NG));
     write_string_p(conn, name);
     conn.write(static_cast<int>(Protocol::COM_END));
 
-    // reading answer
     bool success;
     unsigned char ans = conn.read();
     if (ans != static_cast<int>(Protocol::ANS_CREATE_NG)){
@@ -133,12 +128,10 @@ bool Messagehandler::com_create_ng(const Connection& conn, string name){
 }
 
 bool Messagehandler::com_delete_ng(const Connection& conn, int id_nbr){
-    // writing command
     conn.write(static_cast<int>(Protocol::COM_DELETE_NG));
     write_num_p(conn, id_nbr);
     conn.write(static_cast<int>(Protocol::COM_END));
 
-    // reading answer
     bool success;
     unsigned char ans = conn.read();
     unsigned char nak_type;
@@ -170,12 +163,10 @@ bool Messagehandler::com_delete_ng(const Connection& conn, int id_nbr){
 
 
 vector<pair<int, string> > Messagehandler::com_list_art(const Connection& conn, int ng_id_nbr){
-    // writing command
     conn.write(static_cast<int>(Protocol::COM_LIST_ART));
     write_num_p(conn, ng_id_nbr);
     conn.write(static_cast<int>(Protocol::COM_END));
 
-    // reading answer
     unsigned char ans = conn.read();
     if (ans != static_cast<int>(Protocol::ANS_LIST_ART)){
         throw std::runtime_error("Wrong answer type or no answer: ");
@@ -208,7 +199,6 @@ vector<pair<int, string> > Messagehandler::com_list_art(const Connection& conn, 
 }
 
 bool Messagehandler::com_create_art(const Connection& conn, int ng_id_nbr, string title, string author, string text){
-    // writing commmand
     conn.write(static_cast<int>(Protocol::COM_CREATE_ART));
     write_num_p(conn, ng_id_nbr);
     write_string_p(conn, title);
@@ -216,7 +206,6 @@ bool Messagehandler::com_create_art(const Connection& conn, int ng_id_nbr, strin
     write_string_p(conn, text);
     conn.write(static_cast<int>(Protocol::COM_END));
 
-    // reading answer
     bool success;
     unsigned char ans = conn.read();
     if (ans != static_cast<int>(Protocol::ANS_CREATE_ART)){
@@ -247,13 +236,11 @@ bool Messagehandler::com_create_art(const Connection& conn, int ng_id_nbr, strin
 }
 
 bool Messagehandler::com_delete_art(const Connection& conn, int ng_id_nbr, int art_id_nbr){
-    // writing command
     conn.write(static_cast<int>(Protocol::COM_DELETE_ART));
     write_num_p(conn, ng_id_nbr);
     write_num_p(conn, art_id_nbr);
     conn.write(static_cast<int>(Protocol::COM_END));
 
-    // reading answer
     bool success;
     unsigned char ans = conn.read();
     if (ans != static_cast<int>(Protocol::ANS_DELETE_ART)){
@@ -287,13 +274,11 @@ bool Messagehandler::com_delete_art(const Connection& conn, int ng_id_nbr, int a
 
 
 void Messagehandler::com_get_art(const Connection& conn, int ng_id_nbr, int art_id_nbr, string& title, string& author, string& text){
-    // writing command
     conn.write(static_cast<int>(Protocol::COM_GET_ART));
     write_num_p(conn, ng_id_nbr);
     write_num_p(conn, art_id_nbr);
     conn.write(static_cast<int>(Protocol::COM_END));
 
-    // reading answer
     unsigned char ans = conn.read();
     if (ans != static_cast<int>(Protocol::ANS_GET_ART)){
         throw std::runtime_error("Wrong answer type or no answer: ");

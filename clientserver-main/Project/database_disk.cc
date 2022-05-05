@@ -2,7 +2,6 @@
 #include "article.h"
 #include "newsgroup.h"
 
-// own exceptions
 #include "badngnumber.h"
 #include "badartnumber.h"
 
@@ -18,7 +17,6 @@ using std::string;
 using std::pair;
 using std::cout;
 using std::endl;
-// using fs = std::__fs::filesystem;
 
 database::database() {
 	std::__fs::filesystem::create_directory("root");
